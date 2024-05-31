@@ -52,4 +52,5 @@ def parsing_json_file(json_data: dict):
                          result['location']['street']['number'], result['location']['postcode'],
                          result['location']['coordinates']['latitude'], result['location']['coordinates']['longitude'])
 
-    save_user()
+        return user_data, contact_data, media_data, registration_data, city_data, location_data
+        #save_user(user_data, contact_data, media_data, registration_data, city_data, location_data)
