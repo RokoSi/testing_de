@@ -6,7 +6,7 @@ from src.DataProvider.DataProviderDB import save_user, get_chek_email, get_users
 from src.DataProvider.DataProviderURl import get_users_url, parsing_json_file
 from src.resources.constants import update_attr
 
-url = "https://randamuser.me/api/?results="
+url = "https://randomuser.me/api/?results="
 
 
 
@@ -28,7 +28,7 @@ def add_users():
             if count:
                     json_file = get_users_url(count, url)
                     print(type(json_file))
-                    pprint(json_file)
+                    #pprint(json_file)
                     parsing_json_file(json_file)
                     #if len(json_file) != 0:
                         #pars_json = parsing_json_file(json_file)

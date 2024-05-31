@@ -1,40 +1,51 @@
+import logging
 from datetime import datetime
 import psycopg2
 from psycopg2 import OperationalError, ProgrammingError, DatabaseError
 from src.resources import constants
 from src.validators.validator_password import validator_password
 
+log = logging.getLogger(__name__)
+def decorator_get_users_db(func):
+    def wrapper(query: str):
+        try:
+            return func(query)
 
-def connect_db(query):
-    try:
-        connection = psycopg2.connect(
+        except OperationalError as oe:
+            log.error(f"Ошибка подключения к базе данных: {oe}")
+            return False
+        except psycopg2.errors.UniqueViolation as e:
+            log.error("Ошибка уникального ограничения:", e.diag.message_detail, "Данные не будут добавлены")
+            return False
+        except ProgrammingError as pe:
+            if str(pe) != 'ОШИБКА:  отношение "contact_details" уже существует\n':
+                log.error(f"Ошибка в SQL запросе: {pe}")
+                return False
+        except DatabaseError as de:
+            log.error(f"Ошибка базы данных: {de}")
+            return False
+        except Exception as e:
+            log.error(f"Произошла ошибка: {e}")
+            return False
+
+    return wrapper
+
+
+@decorator_get_users_db
+def connect_db(query: str):
+    with psycopg2.connect(
             host=constants.HOST,
             user=constants.USER,
             password=constants.PASSWORD,
-            database=constants.DB
-        )
-    except OperationalError as oe:
-        print(f"Ошибка подключения к базе данных: {oe}")
+            database=constants.DB) as connection:
+        connection.autocommit = True  # Установка autocommit внутри контекстного менеджера
 
-    connection.autocommit = True
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute(query)
-
-            if cursor.description is not None:
-                return cursor.fetchall()
-            else:
-                return False
-    except psycopg2.errors.UniqueViolation as e:
-        print("Ошибка уникального ограниченияe:", e.diag.message_detail, "Данные не будут добавлены")
-
-    except ProgrammingError as pe:
-        if str(pe) != 'ОШИБКА:  отношение "contact_details" уже существует\n':
-            print(f"Ошибка в SQL запросе: {pe}")
-    except DatabaseError as de:
-        print(f"Ошибка базы данных: {de}")
-    except Exception as e:
-        print(f"Произошла ошибка: {e}")
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        if cursor.description is not None:
+            return cursor.fetchall()
+        else:
+            return False
 
 
 def create_db():
@@ -43,10 +54,12 @@ def create_db():
     WHERE schemaname NOT IN ('pg_catalog', 'information_schema'); """
 
     count_table = connect_db(query)
+    print("бд создана"
+          )
     if count_table[0][0] == 0:
         # добавить проверку на кол-во таблиц, чтобы не читать файл
         try:
-            with open('C:\\Users\\yur-f\\Desktop\\project\\testing_de\\docs\\sql\\DDL.sql', 'r') as file:
+            with open('src/resources/DDL.sql', 'r') as file:
                 sql_script = file.read()
             connect_db(sql_script)
         except FileNotFoundError as fe:
@@ -143,11 +156,13 @@ def get_chek_email(email: str):
     query = """SELECT * FROM REGISTRATION_DATA WHERE EMAIL = '{}'""".format(email)
     return connect_db(query)
 
+
 #!1
 def update_param_table_locations_db(email, name_param, value):
     query = """UPDATE locations SET {} = '{}' WHERE
             user_id = (SELECT user_id FROM registration_data WHERE email = '{}')""".format(name_param, value, email)
     connect_db(query)
+
 
 #!!
 def update_param_table_cities_db(email, name_param, value):
@@ -162,17 +177,20 @@ def update_param_table_registration_data_db(email, name_param, value):
             WHERE email = '{}'""".format(name_param, value, email)
     connect_db(query)
 
+
 #11
 def update_param_table_media_data_db(email, name_param, value):
     query = """UPDATE media_data SET {} = '{}'
     WHERE user_id =  (SELECT user_id FROM registration_data WHERE email = '{}') """.format(name_param, value, email)
     connect_db(query)
 
+
 #!!
 def update_param_table_contact_details_db(email, name_param, value):
     query = """UPDATE contact_details SET {} = '{}' WHERE user_id = ( SELECT user_id FROM registration_data 
     WHERE email = '{}')  """.format(name_param, value, email)
     connect_db(query)
+
 
 #!!
 def update_param_table_users_db(email, name_param, value):

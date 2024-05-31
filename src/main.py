@@ -1,21 +1,23 @@
 # -*- coding: utf-8 -*-
 import logging
+import os
+import sys
+
 from src.DataProvider.DataProviderDB import create_db
 from src.method_of_menu import add_users, change_url, get_valid_users, get_invalid_users, email_check, exit_program, \
     update_param
 
 log = logging.getLogger(__name__)
 
-formatlog = '%(asctime)s : %(name)s : %(levelname)s : %(message)s'
-file_handler = logging.FileHandler(".\\logs\\log.log")#C:\\Users\\yur-f\\Desktop\\project\\test_de2\\src\\logs\\log.log")
-file_handler.setLevel(logging.DEBUG)
+log_dir = os.path.join(os.getcwd(), "logs")
+log_file = os.path.join(log_dir, "logfile.log")
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format= formatlog,
-    handlers=[file_handler],
-  #  filemode='w'
-)
+logging.basicConfig(filename=log_file,
+                    filemode="w",
+                    encoding="utf-8",
+                    level=logging.DEBUG,
+                    format='%(asctime)s : %(name)s : %(levelname)s : %(message)s',
+                    datefmt='%d/%m/%Y %I:%M:%S %p')
 
 
 
@@ -58,5 +60,11 @@ def main():
             print("введите число, а не str: ")
 
 
-if __name__ == '__main__':
+
+
+
+
+if __name__ == "__main__":
+    #logging.basicConfig(level=logging.INFO, stream=sys.stdout)
     main()
+
