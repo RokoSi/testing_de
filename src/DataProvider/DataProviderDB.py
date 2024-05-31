@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime
 import psycopg2
 from psycopg2 import OperationalError, ProgrammingError, DatabaseError
 from src.resources import constants
@@ -68,52 +67,40 @@ def create_db():
             print(f"Ошибка пути: {fe}")
 
 
-def save_user(person: tuple):
-    query = f"INSERT INTO cities(city, state, country, created_dttm, updated_dttm)VALUES ({person[4][0]}, {person[4][1]}, {person[4][2]} ) RETURNING city_id"
+def save_user(person: tuple) -> bool:
+    query = (f"INSERT INTO cities(city, state, country, created_dttm, updated_dttm)VALUES ('{person[0][0]}', "
+             f"'{person[4][1]}', '{person[4][2]}' ) RETURNING city_id")
     city = connect_db(query)
 
     if city:
         city_id = city[0][0]
         query = (f"INSERT INTO users(gender, name_title, name_first, name_last, age, nat) "
-                 f"VALUES ({person[0][0]},{person[0][1]},{person[0][2]},{person[0][3]},{person[0][4]},{person[0][
-                     5]})RETURNING user_id")
+                 f"VALUES ('{person[1][0]}','{person[1][1]}','{person[1][2]}','{person[1][3]}',{person[1][4]},'{person[1][
+                     5]}')RETURNING user_id")
 
         user = connect_db(query)
         user_id: int = user[0][0]
 
-        query = f"INSERT INTO contact_details (user_id, phone, cell) VALUES ({user_id}, {person[1][0]}, {person[1][1]})"
+        query = f"INSERT INTO contact_details (user_id, phone, cell) VALUES ({user_id}, '{person[2][0]}', '{person[2][1]}')"
 
         connect_db(query)
 
-        query = f"INSERT INTO media_data(user_id, picture) VALUES ({user_id}, {person[2][0]})"
+        query = f"INSERT INTO media_data(user_id, picture) VALUES ({user_id}, '{person[3][0]}')"
         connect_db(query)
 
         query = (f"INSERT INTO registration_data (user_id, email, username, password, password_md5, "
-                 f"password_validation)VALUES ({user_id}, {person[3][0]}, {person[3][1]},{person[3][2]},{person[3][3]},"
-                 f"{validator_password(person[3][1])}))")
+                 f"password_validation)VALUES ({user_id}, '{person[4][0]}', '{person[4][1]}','{person[4][2]}','{person[4][3]}',"
+                 f"{validator_password(person[4][1])}))")
 
+        connect_db(query)
 
-#
-#         connect_db(query)
-#
-#         query = """
-#             INSERT INTO locations (user_id, city_id, street_name, street_number, postcode, latitude, longitude,
-#             created_dttm, updated_dttm)
-#             VALUES ({}, {}, '{}',{},'{}',{}, {}, '{}','{}')""".format(
-#             user_id,
-#             city_id,
-#             data_dict['street_name'],
-#             data_dict['street_number'],
-#             data_dict['postcode'],
-#             data_dict['latitude'],
-#             data_dict['longitude'],
-#             datetime.now(),
-#             datetime.now()
-#         )
-#
-#         connect_db(query)
-#         return 1
-#     return 0
+        query = (f"INSERT INTO locations (user_id, city_id, street_name, street_number, postcode, latitude, "
+                 f"longitude)VALUES ({user_id}, {city_id}, '{person[5][0]}',{person[5][1]},"
+                 f"{person[5][2]},'{person[5][3]}')")
+
+        connect_db(query)
+        return True
+    return False
 #
 #
 # def get_users_db(param: bool):

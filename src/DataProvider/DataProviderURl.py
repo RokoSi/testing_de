@@ -1,5 +1,6 @@
 import logging
 from pprint import pprint
+
 import requests
 
 from src.DataProvider.DataProviderDB import save_user
@@ -20,6 +21,9 @@ def decorator_get_users_url(func):
         except requests.exceptions.ConnectionError:
             log.error("Ошибка: ошибка соединения.")
             return False
+        except requests.exceptions.Timeout:
+            print("Истекло время ожидания")
+            return False
         except requests.exceptions.RequestException as e:
             log.error(f"Неизвестная ошибка: {e}")
             return False
@@ -32,15 +36,17 @@ def get_users_url(count_users: int, url: str) -> [dict | bool]:
     with requests.get(url + str(count_users)) as response:
         if response.status_code == 200:
             data = response.json()
-
+            pprint(data)
             return data
         else:
             return False
 
 
-def parsing_json_file(json_data: dict):
+def parsing_and_save_file(json_data: dict):
+    count_add_users: int = 0
+    pprint(json_data)
     for result in json_data['results']:
-        pprint(result)
+        #pprint(result)
         user_data = (result['gender'], result['name']['title'], result['name']['first'], result['name']['last'],
                      result['dob']['age'], result['nat'])
         contact_data = (result['phone'], result['cell'])
@@ -52,5 +58,5 @@ def parsing_json_file(json_data: dict):
                          result['location']['street']['number'], result['location']['postcode'],
                          result['location']['coordinates']['latitude'], result['location']['coordinates']['longitude'])
 
-        return user_data, contact_data, media_data, registration_data, city_data, location_data
-        #save_user(user_data, contact_data, media_data, registration_data, city_data, location_data)
+        count_add_users += save_user((city_data, user_data, contact_data, media_data, registration_data, location_data))
+    return count_add_users

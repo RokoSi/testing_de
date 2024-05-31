@@ -1,8 +1,7 @@
 import sys
 
-from src.DataProvider.DataProviderDB import save_user
-from src.DataProvider.DataProviderURl import get_users_url, parsing_json_file
-from src.resources.constants import update_attr
+from src.DataProvider.DataProviderURl import get_users_url,  parsing_and_save_file
+
 
 url = "https://randomuser.me/api/?results="
 
@@ -16,21 +15,21 @@ def set_url(new_url):
     url = new_url
 
 
-def add_users():
-    count_user_in_db = 0
-    exit_add = True
+def add_users() -> bool:
+    count_user_in_db: int = 0
+    exit_add: bool = True
     while exit_add:
         try:
-            count = int(input("введите количество пользователей: "))
+            count: int = int(input("введите количество пользователей: "))
             if count:
-                json_file = get_users_url(count, url)
-                data_json = parsing_json_file(json_file)
-                if len(json_file) != 0:
-                    count_user_in_db += save_user(data_json)
+                json_file: [dict | bool] = get_users_url(count, url)
+                count_user_in_db: bool = parsing_and_save_file(json_file)
             print("Успешно добавлено: ", count_user_in_db, "записей")
             exit_add = False
+            return True
         except ValueError:
             print("ОШИБКА: ведите число:  ")
+    return False
 
 
 def change_url():

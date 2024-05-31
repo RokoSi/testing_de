@@ -49,7 +49,6 @@ def menu_choice(choice):
 
 def main():
     create_db()
-    print(validator_password("23123123asdA\""))
     while True:
 
         try:
@@ -59,10 +58,6 @@ def main():
             menu_choice(choice)
         except ValueError:
             print("введите число, а не str: ")
-
-
-
-
 
 
 if __name__ == "__main__":
