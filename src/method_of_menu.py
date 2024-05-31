@@ -23,7 +23,7 @@ def add_users() -> bool:
             count: int = int(input("введите количество пользователей: "))
             if count:
                 json_file: [dict | bool] = get_users_url(count, url)
-                count_user_in_db: bool = parsing_and_save_file(json_file)
+                count_user_in_db: int = parsing_and_save_file(json_file)
             print("Успешно добавлено: ", count_user_in_db, "записей")
             exit_add = False
             return True

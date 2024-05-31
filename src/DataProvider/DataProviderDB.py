@@ -33,7 +33,7 @@ def decorator_get_users_db(func):
 
 
 @decorator_get_users_db
-def connect_db(query: str):
+def connect_db(query: str) -> [dict | bool]:
     with psycopg2.connect(
             host=constants.HOST,
             user=constants.USER,
@@ -49,16 +49,14 @@ def connect_db(query: str):
             return False
 
 
+#добавить возвращаемое значение
 def create_db():
     query = """
     SELECT COUNT(*) FROM pg_catalog.pg_tables
     WHERE schemaname NOT IN ('pg_catalog', 'information_schema'); """
 
     count_table = connect_db(query)
-    print("бд создана"
-          )
     if count_table[0][0] == 0:
-        # добавить проверку на кол-во таблиц, чтобы не читать файл
         try:
             with open('src/resources/DDL.sql', 'r') as file:
                 sql_script = file.read()
@@ -68,35 +66,36 @@ def create_db():
 
 
 def save_user(person: tuple) -> bool:
-    query = (f"INSERT INTO cities(city, state, country, created_dttm, updated_dttm)VALUES ('{person[0][0]}', "
+    query = (f"INSERT INTO cities(city, state, country)VALUES ('{person[0][0]}', "
              f"'{person[4][1]}', '{person[4][2]}' ) RETURNING city_id")
     city = connect_db(query)
 
     if city:
         city_id = city[0][0]
         query = (f"INSERT INTO users(gender, name_title, name_first, name_last, age, nat) "
-                 f"VALUES ('{person[1][0]}','{person[1][1]}','{person[1][2]}','{person[1][3]}',{person[1][4]},'{person[1][
-                     5]}')RETURNING user_id")
+                 f"VALUES ('{person[1][0]}','{person[1][1]}','{person[1][2]}','{person[1][3]}',{person[1][4]},"
+                 f"'{person[1][5]}')RETURNING user_id")
 
         user = connect_db(query)
         user_id: int = user[0][0]
 
-        query = f"INSERT INTO contact_details (user_id, phone, cell) VALUES ({user_id}, '{person[2][0]}', '{person[2][1]}')"
+        query = (f"INSERT INTO contact_details (user_id, phone, cell) VALUES ({user_id}, '{person[2][0]}',"
+                 f" '{person[2][1]}')")
 
         connect_db(query)
 
-        query = f"INSERT INTO media_data(user_id, picture) VALUES ({user_id}, '{person[3][0]}')"
+        query = f"INSERT INTO media_data(user_id, picture) VALUES ({user_id}, '{person[3]}')"
         connect_db(query)
 
         query = (f"INSERT INTO registration_data (user_id, email, username, password, password_md5, "
-                 f"password_validation)VALUES ({user_id}, '{person[4][0]}', '{person[4][1]}','{person[4][2]}','{person[4][3]}',"
-                 f"{validator_password(person[4][1])}))")
+                 f"password_validation)VALUES ({user_id}, '{person[4][0]}', '{person[4][1]}','{person[4][2]}',"
+                 f"'{person[4][3]}',{validator_password(person[4][1])})")
 
         connect_db(query)
 
         query = (f"INSERT INTO locations (user_id, city_id, street_name, street_number, postcode, latitude, "
-                 f"longitude)VALUES ({user_id}, {city_id}, '{person[5][0]}',{person[5][1]},"
-                 f"{person[5][2]},'{person[5][3]}')")
+                 f"longitude)VALUES ({user_id}, {city_id}, '{person[5][0]}','{person[5][1]}',"
+                 f"{person[5][2]},{person[5][3]},{person[5][4]})")
 
         connect_db(query)
         return True

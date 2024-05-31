@@ -5,8 +5,6 @@ import sys
 
 from src.DataProvider.DataProviderDB import create_db
 from src.method_of_menu import add_users
-from src.validators.validator_email import validator_email
-from src.validators.validator_password import validator_password
 
 log = logging.getLogger(__name__)
 
@@ -19,7 +17,6 @@ logging.basicConfig(filename=log_file,
                     level=logging.DEBUG,
                     format='%(asctime)s : %(name)s : %(levelname)s : %(message)s',
                     datefmt='%d/%m/%Y %I:%M:%S %p')
-
 
 
 def print_menu():
@@ -35,7 +32,7 @@ def print_menu():
 
 def menu_choice(choice):
     choices = {
-         1: add_users,
+        1: add_users,
         # 2: change_url,
         # 3: get_valid_users,
         # 4: get_invalid_users,
@@ -63,4 +60,3 @@ def main():
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, stream=sys.stdout)
     main()
-

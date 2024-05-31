@@ -42,21 +42,26 @@ def get_users_url(count_users: int, url: str) -> [dict | bool]:
             return False
 
 
-def parsing_and_save_file(json_data: dict):
+def parsing_and_save_file(json_data: dict) -> int:
     count_add_users: int = 0
     pprint(json_data)
-    for result in json_data['results']:
-        #pprint(result)
-        user_data = (result['gender'], result['name']['title'], result['name']['first'], result['name']['last'],
-                     result['dob']['age'], result['nat'])
-        contact_data = (result['phone'], result['cell'])
-        media_data = result['picture']['large']
-        registration_data = result['email'], result['login']['username'], result['login']['password'], result['login'][
-            'md5']
-        city_data = (result['location']['city'], result['location']['state'], result['location']['country'],)
-        location_data = (result['location']['street']['name'],
-                         result['location']['street']['number'], result['location']['postcode'],
-                         result['location']['coordinates']['latitude'], result['location']['coordinates']['longitude'])
+    try:
+        for result in json_data['results']:
+            user_data = (result['gender'], result['name']['title'], result['name']['first'], result['name']['last'],
+                         result['dob']['age'], result['nat'])
+            contact_data = (result['phone'], result['cell'])
+            media_data = result['picture']['large']
+            registration_data = (result['email'], result['login']['username'],
+                                 result['login']['password'], result['login']['md5'])
+            city_data = (result['location']['city'], result['location']['state'], result['location']['country'],)
+            location_data = (result['location']['street']['name'],
+                             result['location']['street']['number'], result['location']['postcode'],
+                             result['location']['coordinates']['latitude'],
+                             result['location']['coordinates']['longitude'])
 
-        count_add_users += save_user((city_data, user_data, contact_data, media_data, registration_data, location_data))
+            count_add_users += save_user(
+                (city_data, user_data, contact_data, media_data, registration_data, location_data))
+    except TypeError as te:
+        log.error(f"{te}")
+
     return count_add_users

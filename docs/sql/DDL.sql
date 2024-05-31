@@ -6,16 +6,16 @@ CREATE table if not EXISTS users (
     name_last    VARCHAR(255),
     age 		 INT,
     nat          VARCHAR(255),
-    created_dttm TIMESTAMP,
-    updated_dttm TIMESTAMP
+    created_dttm TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_dttm TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 -- Создание таблицы contact_details
 CREATE table if not EXISTS contact_details (
     user_id      INT NOT NULL,
     phone        VARCHAR(255),
     cell         VARCHAR(255),
-    created_dttm TIMESTAMP,
-    updated_dttm TIMESTAMP,
+    created_dttm TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_dttm TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
@@ -24,8 +24,8 @@ CREATE table if not EXISTS contact_details (
 CREATE table if not EXISTS media_data (
     user_id         INT NOT NULL,
     picture         VARCHAR(255),
-    created_dttm    TIMESTAMP,
-    updated_dttm    TIMESTAMP,
+    created_dttm    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_dttm    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
@@ -36,8 +36,8 @@ CREATE table if not EXISTS registration_data (
     password            VARCHAR(255),
     password_md5        VARCHAR(255),
     password_validation BOOLEAN,
-    created_dttm        TIMESTAMP,
-    updated_dttm        TIMESTAMP,
+    created_dttm        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_dttm        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
@@ -49,8 +49,8 @@ CREATE table if not EXISTS cities (
     city 		 VARCHAR(255),
     state 		 VARCHAR(255),
     country 	 VARCHAR(255),
-    created_dttm TIMESTAMP,
-    updated_dttm TIMESTAMP,
+    created_dttm TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_dttm TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT unique_city UNIQUE (city),
     CONSTRAINT unique_state UNIQUE (state),
     CONSTRAINT unique_country UNIQUE (country)
@@ -66,8 +66,8 @@ CREATE table if not EXISTS locations (
     postcode      VARCHAR(255),
     latitude      INT,
     longitude     INT,
-    created_dttm  TIMESTAMP,
-    updated_dttm  TIMESTAMP,
+    created_dttm  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_dttm  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (city_id) REFERENCES cities(city_id)
