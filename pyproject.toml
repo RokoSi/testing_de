@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "testing-de"
+name = "test-de2"
 version = "0.1.0"
 description = ""
 authors = ["chernyshev"]
@@ -7,7 +7,10 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
+requests = "^2.32.3"
+pytest = "^8.2.1"
 psycopg2 = "^2.9.9"
+pydantic = "^2.7.2"
 
 
 [build-system]

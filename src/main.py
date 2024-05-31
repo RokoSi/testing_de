@@ -38,8 +38,7 @@ def main():
             choice = int(input("Выберите пункт меню: "))
             menu_choice(choice)
         except ValueError:
-            print("введите число, а не букву или знак: ")
-
+            print("введите число, а не str: ")
 
 
 if __name__ == '__main__':

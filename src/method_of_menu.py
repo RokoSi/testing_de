@@ -3,10 +3,12 @@ from pprint import pprint
 from src.DataProvider.DataProviderDB import save_user, get_chek_email, get_users_db, update_param_table_cities_db, \
     update_param_table_locations_db, update_param_table_registration_data_db, update_param_table_media_data_db, \
     update_param_table_contact_details_db, update_param_table_users_db
-from src.DataProvider.DataProviderURl import parsing_json_file, get_user_url
+from src.DataProvider.DataProviderURl import get_users_url, parsing_json_file
+#from src.DataProvider.DataProviderURl import parsing_json_file, get_user_url
 from src.resources.constants import update_attr
 
 url = "https://randomuser.me/api/?results="
+
 
 
 def get_url():
@@ -22,19 +24,21 @@ def add_users():
     count_user_in_db = 0
     exit_add = True
     while exit_add:
-        try:
+        #try:
             count = int(input("введите количество пользователей: "))
-            if type(int(count)) == int:
-                for num in range(count):
-                    json_file = get_user_url(num, url)
-                    if len(json_file) != 0:
-                        pars_json = parsing_json_file(json_file)
-                        pprint(pars_json)
-                        count_user_in_db += save_user(pars_json)
-                print("Успешно добавлено: ", count_user_in_db, "записей")
-            exit_add = False
-        except ValueError:
-            print("ОШИБКА: ведите число:  ")
+            if count:
+                    json_file = get_users_url(count, url)
+                    print(type(json_file))
+                    pprint(json_file)
+                    parsing_json_file(json_file)
+                    #if len(json_file) != 0:
+                        #pars_json = parsing_json_file(json_file)
+                        #pprint(pars_json)
+                        #count_user_in_db += save_user(pars_json)
+        #         print("Успешно добавлено: ", count_user_in_db, "записей")
+        #     exit_add = False
+        # except ValueError:
+        #     print("ОШИБКА: ведите число:  ")
 
 
 def change_url():

@@ -3,10 +3,10 @@
 
 #### Стек: `Python`, `Git`, `Docker`, `Postgres`
 
-Разработать интерфейс для взаимодействия с [API](./docs/pages/api.md), получения N-пользователей,
+Разработать интерфейс для взаимодействия с [API](../test_de2/docs/pages/api.md), получения N-пользователей,
 далее у полученных пользователей проверять сложность пароля и автоматически заносить в БД.
 
-![Схема БД](./docs/img/erd_target_db.png)
+![Схема БД](../test_de2/docs/img/erd_target_db.png)
 
 ## Требования
 ### 1. Ссылка на API может меняться.
@@ -20,7 +20,7 @@ aynz.khrymy@example.com
 ### 3. Проверять валидность пароля
 
 Пароль должен содержать:
-```
+``` 
 upper      ABCDEFGHIJKLMNOPQRSTUVWXYZ
 lower      abcdefghijklmnopqrstuvwxyz
 number     0123456789
