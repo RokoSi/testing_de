@@ -1,12 +1,13 @@
 import json
+import logging
+import os
 from pprint import pprint
-
 import requests
-from typing import List
-
-from pydantic import BaseModel
-
 from src.model.users import users
+from logging import getLogger
+
+
+log = logging.getLogger(__name__)
 
 
 def decorator_get_users_url(func):
@@ -14,16 +15,16 @@ def decorator_get_users_url(func):
         try:
             return func(count_users, url)
         except requests.exceptions.MissingSchema:
-            print("Ошибка: отсутствует схема в URL.")
+            log.error("Ошибка: отсутствует схема в URL.")
             return False
         except requests.exceptions.InvalidURL:
-            print("Ошибка: некорректный URL.")
+            log.error("Ошибка: некорректный URL.")
             return False
         except requests.exceptions.ConnectionError:
-            print("Ошибка: ошибка соединения.")
+            log.error("Ошибка: ошибка соединения.")
             return False
         except requests.exceptions.RequestException as e:
-            print(f"Неизвестная ошибка: {e}")
+            log.error(f"Неизвестная ошибка: {e}")
             return False
 
     return wrapper
@@ -39,9 +40,6 @@ def get_users_url(count_users: int, url: str) -> [dict | bool]:
             return False
 
 
-
-
-
 # def parsing_json_file(data):
 #     dict_data: dict = {}
 #     for key, path in parameters.items():
@@ -54,23 +52,24 @@ def get_users_url(count_users: int, url: str) -> [dict | bool]:
 
 
 def parsing_json_file(data):
+    pass
+    # try:
+    #     jdata = {"gender": "ппп",
+    # "name_title":" str",
+    # "name_first": "str",
 
-    try:
-        jdata = {"gender": "ппп",
-    "name_title":" str",
-    "name_first": "str",
-    "name_last": "str",
-    "age": 123,
-    "nat": "str"}
-
-        user_data = data['results'][0]
-        pprint(user_data)
-        j_str = json.dumps(user_data)
-        user = users.parse_raw(j_str)
-
-
-
-
-        pprint(user)
-    except Exception as e:
-        print("ошибка ", e )
+    # "name_last": "str",
+    # "age": 123,
+    # "nat": "str"}
+    #
+    #     user_data = data['results'][0]
+    #     pprint(user_data)
+    #     j_str = json.dumps(user_data)
+    #     user = users.parse_raw(j_str)
+    #
+    #
+    #
+    #
+    #     pprint(user)
+    # except Exception as e:
+    #     print("ошибка ", e )

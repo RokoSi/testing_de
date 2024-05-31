@@ -4,10 +4,9 @@ from src.DataProvider.DataProviderDB import save_user, get_chek_email, get_users
     update_param_table_locations_db, update_param_table_registration_data_db, update_param_table_media_data_db, \
     update_param_table_contact_details_db, update_param_table_users_db
 from src.DataProvider.DataProviderURl import get_users_url, parsing_json_file
-#from src.DataProvider.DataProviderURl import parsing_json_file, get_user_url
 from src.resources.constants import update_attr
 
-url = "https://randomuser.me/api/?results="
+url = "https://randamuser.me/api/?results="
 
 
 

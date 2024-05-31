@@ -1,7 +1,22 @@
 # -*- coding: utf-8 -*-
+import logging
 from src.DataProvider.DataProviderDB import create_db
 from src.method_of_menu import add_users, change_url, get_valid_users, get_invalid_users, email_check, exit_program, \
     update_param
+
+log = logging.getLogger(__name__)
+
+formatlog = '%(asctime)s : %(name)s : %(levelname)s : %(message)s'
+file_handler = logging.FileHandler(".\\logs\\log.log")#C:\\Users\\yur-f\\Desktop\\project\\test_de2\\src\\logs\\log.log")
+file_handler.setLevel(logging.DEBUG)
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format= formatlog,
+    handlers=[file_handler],
+  #  filemode='w'
+)
+
 
 
 def print_menu():
@@ -33,9 +48,11 @@ def main():
     create_db()
 
     while True:
+
         try:
             print_menu()
             choice = int(input("Выберите пункт меню: "))
+
             menu_choice(choice)
         except ValueError:
             print("введите число, а не str: ")
