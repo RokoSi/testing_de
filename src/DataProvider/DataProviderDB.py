@@ -49,112 +49,106 @@ def connect_db(query: str) -> [dict | bool]:
             return False
 
 
-#добавить возвращаемое значение
-def create_db():
-    query = """
-    SELECT COUNT(*) FROM pg_catalog.pg_tables
-    WHERE schemaname NOT IN ('pg_catalog', 'information_schema'); """
+def create_db() -> bool:
+    query: str = ("SELECT COUNT(*) FROM pg_catalog.pg_tables WHERE schemaname NOT IN ('pg_catalog', "
+                  "'information_schema');")
 
-    count_table = connect_db(query)
+    count_table: [dict | bool] = connect_db(query)
     if count_table[0][0] == 0:
         try:
             with open('src/resources/DDL.sql', 'r') as file:
-                sql_script = file.read()
+                sql_script: str = file.read()
             connect_db(sql_script)
+            return True
         except FileNotFoundError as fe:
             print(f"Ошибка пути: {fe}")
+            return False
 
 
 def save_user(person: tuple) -> bool:
-    query = (f"INSERT INTO cities(city, state, country)VALUES ('{person[0][0]}', "
-             f"'{person[4][1]}', '{person[4][2]}' ) RETURNING city_id")
-    city = connect_db(query)
+    query: str = (f"INSERT INTO cities(city, state, country) VALUES ('{person[0][0]}', "
+                  f"'{person[4][1]}', '{person[4][2]}' ) RETURNING city_id")
+    city: dict = connect_db(query)
 
     if city:
-        city_id = city[0][0]
-        query = (f"INSERT INTO users(gender, name_title, name_first, name_last, age, nat) "
-                 f"VALUES ('{person[1][0]}','{person[1][1]}','{person[1][2]}','{person[1][3]}',{person[1][4]},"
-                 f"'{person[1][5]}')RETURNING user_id")
+        city_id: int = city[0][0]
+        query: str = (f"INSERT INTO users(gender, name_title, name_first, name_last, age, nat) "
+                      f"VALUES ('{person[1][0]}','{person[1][1]}','{person[1][2]}','{person[1][3]}',{person[1][4]},"
+                      f"'{person[1][5]}')RETURNING user_id")
 
-        user = connect_db(query)
+        user: [dict | bool] = connect_db(query)
         user_id: int = user[0][0]
 
-        query = (f"INSERT INTO contact_details (user_id, phone, cell) VALUES ({user_id}, '{person[2][0]}',"
-                 f" '{person[2][1]}')")
+        query: str = (f"INSERT INTO contact_details (user_id, phone, cell) VALUES ({user_id}, '{person[2][0]}',"
+                      f" '{person[2][1]}')")
 
         connect_db(query)
 
-        query = f"INSERT INTO media_data(user_id, picture) VALUES ({user_id}, '{person[3]}')"
+        query: str = f"INSERT INTO media_data(user_id, picture) VALUES ({user_id}, '{person[3]}')"
         connect_db(query)
 
-        query = (f"INSERT INTO registration_data (user_id, email, username, password, password_md5, "
-                 f"password_validation)VALUES ({user_id}, '{person[4][0]}', '{person[4][1]}','{person[4][2]}',"
-                 f"'{person[4][3]}',{validator_password(person[4][1])})")
+        query: str = (f"INSERT INTO registration_data (user_id, email, username, password, password_md5, "
+                      f"password_validation)VALUES ({user_id}, '{person[4][0]}', '{person[4][1]}','{person[4][2]}',"
+                      f"'{person[4][3]}',{validator_password(person[4][1])})")
 
         connect_db(query)
 
-        query = (f"INSERT INTO locations (user_id, city_id, street_name, street_number, postcode, latitude, "
-                 f"longitude)VALUES ({user_id}, {city_id}, '{person[5][0]}','{person[5][1]}',"
-                 f"{person[5][2]},{person[5][3]},{person[5][4]})")
+        query: str = (f"INSERT INTO locations (user_id, city_id, street_name, street_number, postcode, latitude, "
+                      f"longitude)VALUES ({user_id}, {city_id}, '{person[5][0]}','{person[5][1]}',"
+                      f"{person[5][2]},{person[5][3]},{person[5][4]})")
 
         connect_db(query)
         return True
     return False
-#
-#
-# def get_users_db(param: bool):
-#     query = """SELECT * FROM users
-#     JOIN contact_details ON users.user_id = contact_details.user_id
-#     JOIN media_data ON users.user_id = media_data.user_id
-#     JOIN registration_data ON users.user_id = registration_data.user_id
-#     JOIN locations ON users.user_id = locations.user_id
-#     WHERE registration_data.password_validation = {}""".format(param)
-#     return connect_db(query)
-#
-#
-# def get_chek_email(email: str):
-#     query = """SELECT * FROM REGISTRATION_DATA WHERE EMAIL = '{}'""".format(email)
-#     return connect_db(query)
-#
-#
-# #!1
-# def update_param_table_locations_db(email, name_param, value):
-#     query = """UPDATE locations SET {} = '{}' WHERE
-#             user_id = (SELECT user_id FROM registration_data WHERE email = '{}')""".format(name_param, value, email)
-#     connect_db(query)
-#
-#
-# #!!
-# def update_param_table_cities_db(email, name_param, value):
-#     query = """UPDATE cities SET {} = '{}' WHERE city_id = (SELECT city_id FROM locations WHERE user_id = (SELECT
-#             user_id FROM registration_data WHERE email = '{}') )""".format(name_param, value, email)
-#     connect_db(query)
-#
-#
-# #11
-# def update_param_table_registration_data_db(email, name_param, value):
-#     query = """UPDATE registration_data SET {} = '{}'
-#             WHERE email = '{}'""".format(name_param, value, email)
-#     connect_db(query)
-#
-#
-# #11
-# def update_param_table_media_data_db(email, name_param, value):
-#     query = """UPDATE media_data SET {} = '{}'
-#     WHERE user_id =  (SELECT user_id FROM registration_data WHERE email = '{}') """.format(name_param, value, email)
-#     connect_db(query)
-#
-#
-# #!!
-# def update_param_table_contact_details_db(email, name_param, value):
-#     query = """UPDATE contact_details SET {} = '{}' WHERE user_id = ( SELECT user_id FROM registration_data
-#     WHERE email = '{}')  """.format(name_param, value, email)
-#     connect_db(query)
-#
-#
-# #!!
-# def update_param_table_users_db(email, name_param, value):
-#     query = """UPDATE users SET {} = '{}' WHERE user_id = ( SELECT user_id FROM registration_data
-#     WHERE email = '{}')""".format(
-#         name_param, value, email)
-#     connect_db(query)
+
+
+def get_users_db(param: bool) -> [dict | bool]:
+    query: str = (f"SELECT gender, name_title, name_first, name_last, age, nat, phone, cell, picture, email, username, "
+                  f"password, password_md5, password_validation, city, state, country, street_name, street_number, "
+                  f"postcode, latitude, longitude FROM users JOIN contact_details ON users.user_id = "
+                  f"contact_details.user_id JOIN media_data ON users.user_id = media_data.user_id JOIN "
+                  f"registration_data ON users.user_id = registration_data.user_id  JOIN locations ON users.user_id = "
+                  f"locations.user_id JOIN cities ON locations.city_id=cities.city_id  WHERE "
+                  f"registration_data.password_validation = {param}")
+    return connect_db(query)
+
+
+def get_check_email(email: str) -> [dict | bool]:
+    query: str = f"SELECT * FROM REGISTRATION_DATA WHERE EMAIL = '{email}'"
+    return connect_db(query)
+
+
+def update_param_table_locations_db(email: str, name_param: str, value: [str | float | int]) -> [dict | bool]:
+    query: str = (f"UPDATE locations SET {name_param} = '{value}' WHERE user_id = (SELECT user_id FROM "
+                  f"registration_data WHERE email = '{email}')")
+    return connect_db(query)
+
+
+def update_param_table_cities_db(email, name_param, value) -> [dict | bool]:
+    query = (f"UPDATE cities SET {name_param} = '{value}' WHERE city_id = (SELECT city_id FROM locations WHERE user_id "
+             f"= (SELECT user_id FROM registration_data WHERE email = '{email}') )")
+
+    return connect_db(query)
+
+
+def update_param_table_registration_data_db(email, name_param, value) -> [dict | bool]:
+    query: str = f"UPDATE registration_data SET {name_param} = '{value}' WHERE email = '{email}'"
+    return connect_db(query)
+
+
+def update_param_table_media_data_db(email, name_param, value) -> [dict | bool]:
+    query: str = (f"UPDATE media_data SET {name_param} = '{value}' WHERE user_id =  (SELECT user_id FROM "
+                  f"registration_data WHERE email = '{email}')")
+    return connect_db(query)
+
+
+def update_param_table_contact_details_db(email, name_param, value) -> [dict | bool]:
+    query: str = (f"UPDATE contact_details SET {name_param} = '{value}' WHERE user_id = ( SELECT user_id FROM "
+                  f"registration_data WHERE email = '{email}')")
+    return connect_db(query)
+
+
+def update_param_table_users_db(email, name_param, value) -> [dict | bool]:
+    query = (f"UPDATE users SET {name_param} = '{value}' WHERE user_id = ( SELECT user_id FROM registration_data WHERE "
+             f"email = '{email}')")
+    return connect_db(query)
