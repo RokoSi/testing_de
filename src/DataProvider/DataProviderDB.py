@@ -2,7 +2,7 @@ import logging
 import psycopg2
 from psycopg2 import OperationalError, ProgrammingError, DatabaseError
 
-from model.Settings import Settings
+from Settings import Settings
 from src.validators.validator_email import validator_email
 from src.validators.validator_password import validator_password
 

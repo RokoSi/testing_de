@@ -3,7 +3,7 @@ from pprint import pprint
 
 import requests
 
-from model.Settings import Settings
+from Settings import Settings
 from src.DataProvider.DataProviderDB import save_user
 
 log = logging.getLogger(__name__)

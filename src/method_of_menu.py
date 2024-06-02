@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from model.Settings import Settings
+from Settings import Settings
 from src.DataProvider.DataProviderDB import update_param_table_cities_db, update_param_table_contact_details_db, \
     update_param_table_locations_db, update_param_table_media_data_db, update_param_table_registration_data_db, \
     update_param_table_users_db, get_check_email, get_users_db
