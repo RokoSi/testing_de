@@ -14,7 +14,7 @@ def decorator_get_users_url(func):
     """
     Декоратор для обработки ошибок
 
-    Param: func: ссылка на функцию get_users_url return: [dict | bool]: вернет dict, если функия получила
+    Param: func: ссылка на функцию get_users_url return: [dict | bool]: вернет dict, если функция получила
     пользователей, если нет, то вернет False, если выполнится ошибка, то тоже вернет False, и запишет данные в log файл
     """
     def wrapper(count_users: int, url: str = settings.URL) -> [dict | bool]:

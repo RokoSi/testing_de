@@ -14,8 +14,8 @@ settings: Settings = Settings()
 
 def add_users() -> bool:
     """
-    Метод для ввода количества пользователей,вызов парсера
-    :return: возвращает True - если запрос выполнен без ошибок,False - если ошибка введенного значения
+    Метод для ввода количества пользователей, вызов парсера
+    :return: возвращает True - если запрос выполнен без ошибок, False - если ошибка введенного значения
     """
     count_user_in_db: int = 0
     exit_add: bool = True
@@ -38,7 +38,7 @@ def add_users() -> bool:
 
 def get_invalid_users() -> bool:
     """
-        Метод для вывод не валидных пользователей
+        Метод для вывода не валидных пользователей
         :return: True - если есть такие пользователи, False - если нет
         """
     results = get_users_db(False)
@@ -84,7 +84,7 @@ def email_check() -> bool:
 
 def update_param() -> bool:
     """
-    Метод для выбора пользователя, какой парамент поменять, на какое значение и кому
+    Метод для выбора пользователя, какой атрибут поменять, на какое значение и кому
     :return: True - если метод на выполнения есть, False - если нет или если не корректный ввод
     """
     print(*[f"{i}. {key}" for i, key in enumerate(update_attr.keys(), start=1)], sep='\n')
@@ -110,8 +110,9 @@ def update_param() -> bool:
         }
 
         if select_table[0] in update_functions:
-            update_functions[select_table[0]](email_user, selected_key, value)
-            return True
+            if update_functions[select_table[0]](email_user, selected_key, value):
+
+                return True
     except (ValueError, IndexError):
         print("Некорректный ввод. Пожалуйста, введите число от 1 до", len(options))
         return False
