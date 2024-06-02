@@ -146,6 +146,7 @@ class TestDataProviderDB:
     def random_name_title() -> str:
         titles = ["Mr.", "Mrs.", "Miss", "Ms.", "Dr.", "Prof."]
         return random.choice(titles)
+
     @staticmethod
     def random_latitude():
         return random.randint(10000, 99999)

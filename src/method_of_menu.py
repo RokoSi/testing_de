@@ -13,6 +13,10 @@ settings: Settings = Settings()
 
 
 def add_users() -> bool:
+    """
+    Метод для ввода количества пользователей,вызов парсера
+    :return: возвращает True - если запрос выполнен без ошибок,False - если ошибка введенного значения
+    """
     count_user_in_db: int = 0
     exit_add: bool = True
     while exit_add:
@@ -32,39 +36,62 @@ def add_users() -> bool:
     return False
 
 
-def get_invalid_users():
+def get_invalid_users() -> bool:
+    """
+        Метод для вывод не валидных пользователей
+        :return: True - если есть такие пользователи, False - если нет
+        """
     results = get_users_db(False)
     if results:
         for row in results:
             print(", ".join(map(str, row)))
+        return True
     else:
         print("нет таких записей")
+        return False
 
 
 def get_valid_users():
+    """
+        Метод для вывода валидных пользователей
+        :return: True - если есть такие пользователи, False - если нет
+        """
     results = get_users_db(True)
     if results:
         for row in results:
             print(", ".join(map(str, row)))
+        return True
     else:
         print("нет таких записей\n")
+        return False
 
 
-def email_check():
+def email_check() -> bool:
+    """
+        Метод для обработки результата проверки email в бд
+        :return: True - если есть такой пользователь, False - если нет
+        """
     email: str = input("введите email:")
-    answer_email: [list | bool] = get_check_email(email)
+    answer_email: [dict | bool] = get_check_email(email)
     if answer_email:
-        print("есть такой email в базе\n")
+        print(f"есть такой email в базе\n ")
+        return True
 
     else:
         print("нет такого email в базе\n")
+        return False
 
 
-def update_param():
+def update_param() -> bool:
+    """
+    Метод для выбора пользователя, какой парамент поменять, на какое значение и кому
+    :return: True - если метод на выполнения есть, False - если нет или если не корректный ввод
+    """
     print(*[f"{i}. {key}" for i, key in enumerate(update_attr.keys(), start=1)], sep='\n')
     num_param = input("выберите параметр на изменение:")
+    options = list(update_attr.keys())
     try:
-        options = list(update_attr.keys())
+
         selected_key = options[int(num_param) - 1]
         print("Вы выбрали параметр:", selected_key)
 
@@ -72,25 +99,26 @@ def update_param():
         email_user = input("Выберете пользователя по email: ")
 
         select_table = update_attr.get(selected_key)
-        print(select_table[0])
-        if select_table[0] == 'cities':
-            update_param_table_cities_db(email_user, selected_key, value)
-        elif select_table[0] == 'contact_details':
-            update_param_table_contact_details_db(email_user, selected_key, value)
-        elif select_table[0] == 'locations':
-            update_param_table_locations_db(email_user, selected_key, value)
-        elif select_table[0] == 'media_data':
-            update_param_table_media_data_db(email_user, selected_key, value)
-        elif select_table[0] == 'registration_data':
-            update_param_table_registration_data_db(email_user, selected_key, value)
-        elif select_table[0] == 'users':
-            update_param_table_users_db(email_user, selected_key, value)
-        print(email_user, selected_key, value, update_attr.get(selected_key))
 
-        #update_param_db(email_user, update_attr.get(selected_key), value)
+        update_functions = {
+            'cities': update_param_table_cities_db,
+            'contact_details': update_param_table_contact_details_db,
+            'locations': update_param_table_locations_db,
+            'media_data': update_param_table_media_data_db,
+            'registration_data': update_param_table_registration_data_db,
+            'users': update_param_table_users_db
+        }
+
+        if select_table[0] in update_functions:
+            update_functions[select_table[0]](email_user, selected_key, value)
+            return True
     except (ValueError, IndexError):
         print("Некорректный ввод. Пожалуйста, введите число от 1 до", len(options))
+        return False
 
 
 def exit_program():
+    """
+    Метод для завершения программы
+    """
     sys.exit()
