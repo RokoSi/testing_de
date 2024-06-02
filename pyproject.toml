@@ -11,6 +11,8 @@ requests = "^2.32.3"
 pytest = "^8.2.1"
 psycopg2 = "^2.9.9"
 pydantic = "^2.7.2"
+python-dotenv = "^1.0.1"
+pydantic-settings = "^2.2.1"
 
 
 [build-system]

@@ -3,13 +3,15 @@ from pprint import pprint
 
 import requests
 
+from model.Settings import Settings
 from src.DataProvider.DataProviderDB import save_user
 
 log = logging.getLogger(__name__)
+settings = Settings()
 
 
 def decorator_get_users_url(func):
-    def wrapper(count_users: int, url: str) -> [dict | bool]:
+    def wrapper(count_users: int, url: str = settings.URL) -> [dict | bool]:
         try:
             return func(count_users, url)
         except requests.exceptions.MissingSchema:
@@ -22,7 +24,7 @@ def decorator_get_users_url(func):
             log.error("Ошибка: ошибка соединения.")
             return False
         except requests.exceptions.Timeout:
-            print("Истекло время ожидания")
+            log.info("Истекло время ожидания")
             return False
         except requests.exceptions.RequestException as e:
             log.error(f"Неизвестная ошибка: {e}")
@@ -32,11 +34,11 @@ def decorator_get_users_url(func):
 
 
 @decorator_get_users_url
-def get_users_url(count_users: int, url: str) -> [dict | bool]:
+def get_users_url(count_users: int, url: str = settings.URL) -> [dict | bool]:
     with requests.get(url + str(count_users)) as response:
         if response.status_code == 200:
             data = response.json()
-            pprint(data)
+
             return data
         else:
             return False

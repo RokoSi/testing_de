@@ -8,7 +8,8 @@ CREATE table if not EXISTS users (
     nat          VARCHAR(255),
     created_dttm TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_dttm TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+   );
+
 -- Создание таблицы contact_details
 CREATE table if not EXISTS contact_details (
     user_id      INT NOT NULL,
@@ -51,9 +52,8 @@ CREATE table if not EXISTS cities (
     country 	 VARCHAR(255),
     created_dttm TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_dttm TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT unique_city UNIQUE (city),
-    CONSTRAINT unique_state UNIQUE (state),
-    CONSTRAINT unique_country UNIQUE (country)
+    CONSTRAINT unique_city_state_country UNIQUE (city,state,country)
+
 );
 
 
@@ -64,8 +64,8 @@ CREATE table if not EXISTS locations (
     street_name   VARCHAR(255),
     street_number INT,
     postcode      VARCHAR(255),
-    latitude      INT,
-    longitude     INT,
+    latitude      FLOAT,
+    longitude     FLOAT,
     created_dttm  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_dttm  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -74,4 +74,5 @@ CREATE table if not EXISTS locations (
 );
 
 --drop table locations, cities, registration_data, media_data, contact_details, users
+
 

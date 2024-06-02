@@ -1,7 +1,7 @@
 run_dev:
 	docker compose up -d
 stop_dev:
-	docke compose down
+	docker compose down
 test:
 	poetry run black ./src
 	poetry run mypy ./src
