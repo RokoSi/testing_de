@@ -1,4 +1,6 @@
 import logging
+import os
+
 import psycopg2
 from psycopg2 import OperationalError, ProgrammingError, DatabaseError
 
@@ -77,18 +79,21 @@ def create_db() -> bool:
                   "'information_schema')")
 
     count_table: [list | bool] = connect_db(query)
-
+    #print(count_table,"\n",type(count_table) is list)
     if type(count_table) is list:
-        if count_table[0][0] != 0:
+        if count_table[0][0] == 0:
             try:
-                with open('src/db/DDL.sql', 'r') as file:
+                db_dir = os.path.join(os.getcwd(), "db")
+                ddl_file = os.path.join(db_dir, "DDL.sql")
+
+                with open(f'{ddl_file}', 'r') as file:
                     sql_script: str = file.read()
                 connect_db(sql_script)
                 return True
             except FileNotFoundError as fe:
                 log.error(f"Ошибка пути: {fe}")
                 return False
-        return True
+        return False
     return False
 
 
