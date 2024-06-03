@@ -33,17 +33,20 @@ def menu_choice(choice):
 
 
 def main():
-    create_db()
 
-    while True:
-        try:
-            print("Меню:")
-            for item in MENU_ITEMS:
-                print(item)
-            choice = int(input("Выберите пункт меню: "))
-            menu_choice(choice)
-        except ValueError:
-            print("введите число, а не str: ")
+    if create_db():
+
+        while True:
+            try:
+                print("Меню:")
+                for item in MENU_ITEMS:
+                    print(item)
+                choice = int(input("Выберите пункт меню: "))
+                menu_choice(choice)
+            except ValueError:
+                print("введите число, а не str: ")
+    else:
+        print("Программа не смога найти или создать таблицы для работы с бд")
 
 
 if __name__ == "__main__":

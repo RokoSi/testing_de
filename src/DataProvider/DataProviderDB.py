@@ -11,7 +11,6 @@ settings = Settings()
 
 
 def decorator_get_users_db(func: callable) -> callable:
-
     def wrapper(query: str, param: tuple = None) -> [dict | bool]:
         """
             Декоратор для подключения к бд, служит для обработки ошибок
@@ -77,15 +76,17 @@ def create_db() -> bool:
     query: str = ("SELECT COUNT(*) FROM pg_catalog.pg_tables WHERE schemaname NOT IN ('pg_catalog',"
                   "'information_schema')")
     count_table: [dict | bool] = connect_db(query)
-    if count_table[0][0] == 0:
-        try:
-            with open('src/db/DDL.sql', 'r') as file:
-                sql_script: str = file.read()
-            connect_db(sql_script)
-            return True
-        except FileNotFoundError as fe:
-            log.error(f"Ошибка пути: {fe}")
-            return False
+    if count_table:
+        if count_table[0][0] != 0:
+            try:
+                with open('src/db/DDL.sql', 'r') as file:
+                    sql_script: str = file.read()
+                connect_db(sql_script)
+                return True
+            except FileNotFoundError as fe:
+                log.error(f"Ошибка пути: {fe}")
+                return False
+    return False
 
 
 def save_user(person: tuple) -> bool:
