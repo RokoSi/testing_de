@@ -75,8 +75,10 @@ def create_db() -> bool:
         """
     query: str = ("SELECT COUNT(*) FROM pg_catalog.pg_tables WHERE schemaname NOT IN ('pg_catalog',"
                   "'information_schema')")
-    count_table: [dict | bool] = connect_db(query)
-    if count_table:
+
+    count_table: [list | bool] = connect_db(query)
+
+    if type(count_table) is list:
         if count_table[0][0] != 0:
             try:
                 with open('src/db/DDL.sql', 'r') as file:
@@ -86,6 +88,7 @@ def create_db() -> bool:
             except FileNotFoundError as fe:
                 log.error(f"Ошибка пути: {fe}")
                 return False
+        return True
     return False
 
 
