@@ -8,8 +8,7 @@ class Settings(BaseSettings):
     )
 
     host: str
-    db: str
     user: str
     password: str
-    port: int
+    db: str
     URL: str

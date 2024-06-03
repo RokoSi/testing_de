@@ -1,19 +1,19 @@
 import logging
 import os
-
 import psycopg2
 from psycopg2 import OperationalError, ProgrammingError, DatabaseError
-
 from Settings import Settings
 from src.validators.validator_email import validator_email
 from src.validators.validator_password import validator_password
+from typing import Callable, List, Union, Optional, Tuple
 
 log = logging.getLogger(__name__)
 settings = Settings()
 
 
-def decorator_get_users_db(func: callable) -> callable:
-    def wrapper(query: str, param: tuple = None) -> [dict | bool]:
+def decorator_get_users_db(func: Callable[[str, Optional[Tuple]], Union[List[dict], bool]]) -> (
+        Callable)[[str, Optional[Tuple]], Union[List[dict], bool]]:
+    def wrapper(query: str, param: Optional[Tuple] = None) -> Union[List[dict], bool]:
         """
             Декоратор для подключения к бд, служит для обработки ошибок
 
@@ -53,6 +53,7 @@ def connect_db(query: str, param: tuple = None) -> [dict | bool]:
         :param param: параметры для запроса
         :return: если возвращает значение, то вернет возвращаемое значение, если нет, то False
         """
+    print(settings)
     with psycopg2.connect(
             host=settings.host,
             user=settings.user,
@@ -102,40 +103,41 @@ def save_user(person: tuple) -> bool:
 
         :param person: данные в формате tuple, которые содержат всю информацию о пользователе
         :return: True - если сохранение выполнено, False - если нет """
-    query: str = "INSERT INTO cities(city, state, country) VALUES (%s, %s, %s ) RETURNING city_id"
-    param: tuple = (person[0][0], person[0][1], person[0][2])
+    insert_query_cities: str = "INSERT INTO cities(city, state, country) VALUES (%s, %s, %s ) RETURNING city_id"
+    param_cities: tuple = (person[0][0], person[0][1], person[0][2])
 
-    city: dict = connect_db(query, param)
+    city: dict = connect_db(insert_query_cities, param_cities)
 
     if city:
         city_id: int = city[0][0]
-        query: str = ("INSERT INTO users(gender, name_title, name_first, name_last, age, nat) VALUES (%s, %s, %s, %s, "
-                      "%s, %s)RETURNING user_id")
-        param: tuple = (person[1][0], person[1][1], person[1][2], person[1][3], person[1][4], person[1][5])
-        user: [dict | bool] = connect_db(query, param)
+        insert_query_users: str = ("INSERT INTO users(gender, name_title, name_first, name_last, age, nat) VALUES ("
+                                   "%s, %s, %s, %s, %s, %s)RETURNING user_id")
+        param_users: tuple = (person[1][0], person[1][1], person[1][2], person[1][3], person[1][4], person[1][5])
+        user: [dict | bool] = connect_db(insert_query_users, param_users)
         user_id: int = user[0][0]
 
-        query: str = "INSERT INTO contact_details (user_id, phone, cell) VALUES (%s,%s,%s)"
-        param: tuple = (user_id, person[2][0], person[2][1])
+        insert_query_contact_details: str = "INSERT INTO contact_details (user_id, phone, cell) VALUES (%s,%s,%s)"
+        param_contact_details: tuple = (user_id, person[2][0], person[2][1])
 
-        connect_db(query, param)
+        connect_db(insert_query_contact_details, param_contact_details)
 
-        query: str = "INSERT INTO media_data(user_id, picture) VALUES (%s, %s)"
-        param: tuple = (user_id, person[3])
-        connect_db(query, param)
+        insert_query_media_data: str = "INSERT INTO media_data(user_id, picture) VALUES (%s, %s)"
+        param_media_data: tuple = (user_id, person[3])
+        connect_db(insert_query_media_data, param_media_data)
 
-        query: str = ("INSERT INTO registration_data (user_id, email, username, password, password_md5, "
-                      "password_validation)VALUES (%s, %s, %s, %s, %s, %s)")
-        param: tuple = (
+        insert_query_registration_data: str = ("INSERT INTO registration_data (user_id, email, username, password, "
+                                               "password_md5, password_validation)VALUES (%s, %s, %s, %s, %s, %s)")
+        param_registration_data: tuple = (
             user_id, person[4][0], person[4][1], person[4][2], person[4][3], validator_password(person[4][1]))
 
-        connect_db(query, param)
+        connect_db(insert_query_registration_data, param_registration_data)
 
-        query: str = ("INSERT INTO locations (user_id, city_id, street_name, street_number, postcode, latitude, "
-                      "longitude)VALUES (%s, %s, %s, %s, %s, %s, %s)")
-        param: tuple = (user_id, city_id, str(person[5][0]), person[5][1], person[5][2], person[5][3], person[5][4])
+        insert_query_locations: str = ("INSERT INTO locations (user_id, city_id, street_name, street_number, "
+                                       "postcode, latitude, longitude)VALUES (%s, %s, %s, %s, %s, %s, %s)")
+        param_locations: tuple = (user_id, city_id, str(person[5][0]), person[5][1], person[5][2],
+                                  person[5][3], person[5][4])
 
-        connect_db(query, param)
+        connect_db(insert_query_locations, param_locations)
         return True
     return False
 

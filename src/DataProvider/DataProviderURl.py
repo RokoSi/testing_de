@@ -1,8 +1,6 @@
 import logging
 from pprint import pprint
-
 import requests
-
 from Settings import Settings
 from src.DataProvider.DataProviderDB import save_user
 
