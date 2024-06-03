@@ -79,9 +79,8 @@ def create_db() -> bool:
                   "'information_schema')")
 
     count_table: [list | bool] = connect_db(query)
-    #print(count_table,"\n",type(count_table) is list)
     if type(count_table) is list:
-        if count_table[0][0] == 0:
+        if count_table[0][0] != 0:
             try:
                 db_dir = os.path.join(os.getcwd(), "db")
                 ddl_file = os.path.join(db_dir, "DDL.sql")
