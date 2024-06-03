@@ -115,8 +115,8 @@ class TestDataProviderDB:
         return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(12))
 
     def random_email(self):
-        return f"{self.random_first_name()}.{self.random_last_name()}@{random.choice(['gmail',
-                                                                                      'yahoo', 'hotmail'])}.com"
+        return (f"{self.random_first_name()}.{self.random_last_name()}@{random.choice(['gmail', 'yahoo', 'hotmail'])}"
+                f".com")
 
     @staticmethod
     def random_phone():
