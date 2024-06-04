@@ -1,25 +1,17 @@
-version: "3"
+version: '3.8'
 
 services:
   db:
-    container_name: "de_projects"
     image: postgres:13
     restart: always
     environment:
-      - POSTGRES_DB=de_projects
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
-      - de_project:/var/lib/postgresql/data
-    networks:
-      - DEProjects
+      - db:/var/lib/postgresql/data
 
 volumes:
-  de_project:
-
-networks:
-  DEProjects:
-    driver: bridge
+  db:
+    driver: local
