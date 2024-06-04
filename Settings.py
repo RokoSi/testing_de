@@ -11,4 +11,5 @@ class Settings(BaseSettings):
     user: str
     password: str
     db: str
+    port: int
     URL: str

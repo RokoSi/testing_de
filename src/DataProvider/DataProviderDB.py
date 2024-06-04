@@ -5,22 +5,21 @@ from psycopg2 import OperationalError, ProgrammingError, DatabaseError
 from Settings import Settings
 from src.validators.validator_email import validator_email
 from src.validators.validator_password import validator_password
-from typing import Callable, List, Union, Optional, Tuple
+from typing import Optional, Tuple
 
 log = logging.getLogger(__name__)
 settings = Settings()
 
 
-def decorator_get_users_db(func: Callable[[str, Optional[Tuple]], Union[List[dict], bool]]) -> (
-        Callable)[[str, Optional[Tuple]], Union[List[dict], bool]]:
-    def wrapper(query: str, param: Optional[Tuple] = None) -> Union[List[dict], bool]:
+def decorator_get_users_db(func) -> [dict, bool]:
+    def wrapper(query: str, param: Optional[Tuple] = None) -> [dict, bool]:
         """
-            Декоратор для подключения к бд, служит для обработки ошибок
+        Декоратор для подключения к бд, служит для обработки ошибок
 
-            :param query: запрос на подключение
-            :param param: параметры для запроса
-            :return: вернет dict если выполнится без ошибок, если нет, то False и записывает ошибку в log файл
-            """
+        :param query: запрос на подключение
+        :param param: параметры для запроса
+        :return: вернет dict если выполнится без ошибок, если нет, то False и записывает ошибку в log файл
+        """
         try:
             return func(query, param)
 
@@ -47,18 +46,19 @@ def decorator_get_users_db(func: Callable[[str, Optional[Tuple]], Union[List[dic
 @decorator_get_users_db
 def connect_db(query: str, param: tuple = None) -> [dict | bool]:
     """
-        Метод для подключения к бд
+    Метод для подключения к бд
 
-        :param query: запрос на подключение
-        :param param: параметры для запроса
-        :return: если возвращает значение, то вернет возвращаемое значение, если нет, то False
-        """
+    :param query: запрос на подключение
+    :param param: параметры для запроса
+    :return: если возвращает значение, то вернет возвращаемое значение, если нет, то False
+    """
     print(settings)
     with psycopg2.connect(
-            host=settings.host,
-            user=settings.user,
-            password=settings.password,
-            database=settings.db) as connection:
+        host=settings.host,
+        user=settings.user,
+        password=settings.password,
+        database=settings.db,
+    ) as connection:
         connection.autocommit = True
 
     with connection.cursor() as cursor:
@@ -72,12 +72,14 @@ def connect_db(query: str, param: tuple = None) -> [dict | bool]:
 
 def create_db() -> bool:
     """
-        Метод для создания таблиц в бд
+    Метод для создания таблиц в бд
 
-        :return: если таблицы созданы вернет True, если ошибка, то False
-        """
-    query: str = ("SELECT COUNT(*) FROM pg_catalog.pg_tables WHERE schemaname NOT IN ('pg_catalog',"
-                  "'information_schema')")
+    :return: если таблицы созданы вернет True, если ошибка, то False
+    """
+    query: str = (
+        "SELECT COUNT(*) FROM pg_catalog.pg_tables WHERE schemaname NOT IN ('pg_catalog',"
+        "'information_schema')"
+    )
 
     count_table: [list | bool] = connect_db(query)
     if type(count_table) is list:
@@ -86,7 +88,7 @@ def create_db() -> bool:
                 db_dir = os.path.join(os.getcwd(), "db")
                 ddl_file = os.path.join(db_dir, "DDL.sql")
 
-                with open(f'{ddl_file}', 'r') as file:
+                with open(f"{ddl_file}", "r") as file:
                     sql_script: str = file.read()
                 connect_db(sql_script)
                 return True
@@ -99,10 +101,10 @@ def create_db() -> bool:
 
 def save_user(person: tuple) -> bool:
     """
-        Метод для сохранения пользователя в бд
+    Метод для сохранения пользователя в бд
 
-        :param person: данные в формате tuple, которые содержат всю информацию о пользователе
-        :return: True - если сохранение выполнено, False - если нет """
+    :param person: данные в формате tuple, которые содержат всю информацию о пользователе
+    :return: True - если сохранение выполнено, False - если нет"""
     insert_query_cities: str = "INSERT INTO cities(city, state, country) VALUES (%s, %s, %s ) RETURNING city_id"
     param_cities: tuple = (person[0][0], person[0][1], person[0][2])
 
@@ -110,32 +112,62 @@ def save_user(person: tuple) -> bool:
 
     if city:
         city_id: int = city[0][0]
-        insert_query_users: str = ("INSERT INTO users(gender, name_title, name_first, name_last, age, nat) VALUES ("
-                                   "%s, %s, %s, %s, %s, %s)RETURNING user_id")
-        param_users: tuple = (person[1][0], person[1][1], person[1][2], person[1][3], person[1][4], person[1][5])
+        insert_query_users: str = (
+            "INSERT INTO users(gender, name_title, name_first, name_last, age, nat) VALUES ("
+            "%s, %s, %s, %s, %s, %s)RETURNING user_id"
+        )
+        param_users: tuple = (
+            person[1][0],
+            person[1][1],
+            person[1][2],
+            person[1][3],
+            person[1][4],
+            person[1][5],
+        )
         user: [dict | bool] = connect_db(insert_query_users, param_users)
         user_id: int = user[0][0]
 
-        insert_query_contact_details: str = "INSERT INTO contact_details (user_id, phone, cell) VALUES (%s,%s,%s)"
+        insert_query_contact_details: str = (
+            "INSERT INTO contact_details (user_id, phone, cell) VALUES (%s,%s,%s)"
+        )
         param_contact_details: tuple = (user_id, person[2][0], person[2][1])
 
         connect_db(insert_query_contact_details, param_contact_details)
 
-        insert_query_media_data: str = "INSERT INTO media_data(user_id, picture) VALUES (%s, %s)"
+        insert_query_media_data: str = (
+            "INSERT INTO media_data(user_id, picture) VALUES (%s, %s)"
+        )
         param_media_data: tuple = (user_id, person[3])
         connect_db(insert_query_media_data, param_media_data)
 
-        insert_query_registration_data: str = ("INSERT INTO registration_data (user_id, email, username, password, "
-                                               "password_md5, password_validation)VALUES (%s, %s, %s, %s, %s, %s)")
+        insert_query_registration_data: str = (
+            "INSERT INTO registration_data (user_id, email, username, password, "
+            "password_md5, password_validation)VALUES (%s, %s, %s, %s, %s, %s)"
+        )
         param_registration_data: tuple = (
-            user_id, person[4][0], person[4][1], person[4][2], person[4][3], validator_password(person[4][1]))
+            user_id,
+            person[4][0],
+            person[4][1],
+            person[4][2],
+            person[4][3],
+            validator_password(person[4][1]),
+        )
 
         connect_db(insert_query_registration_data, param_registration_data)
 
-        insert_query_locations: str = ("INSERT INTO locations (user_id, city_id, street_name, street_number, "
-                                       "postcode, latitude, longitude)VALUES (%s, %s, %s, %s, %s, %s, %s)")
-        param_locations: tuple = (user_id, city_id, str(person[5][0]), person[5][1], person[5][2],
-                                  person[5][3], person[5][4])
+        insert_query_locations: str = (
+            "INSERT INTO locations (user_id, city_id, street_name, street_number, "
+            "postcode, latitude, longitude)VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        )
+        param_locations: tuple = (
+            user_id,
+            city_id,
+            str(person[5][0]),
+            person[5][1],
+            person[5][2],
+            person[5][3],
+            person[5][4],
+        )
 
         connect_db(insert_query_locations, param_locations)
         return True
@@ -144,28 +176,30 @@ def save_user(person: tuple) -> bool:
 
 def get_users_db(param: bool) -> [dict | bool]:
     """
-        Получение списка пользователей с валидным или не валидным паролем
+    Получение списка пользователей с валидным или не валидным паролем
 
-        :param param: bool параметр False - не валидные пользователи, True - валидные пользователи
-        :return: dict - если пользователи такие есть, False - если таких нет
-        """
-    query: str = ("SELECT gender, name_title, name_first, name_last, age, nat, phone, cell, picture, email, username, "
-                  "password, password_md5, password_validation, city, state, country, street_name, street_number, "
-                  "postcode, latitude, longitude FROM users JOIN contact_details ON users.user_id = "
-                  "contact_details.user_id JOIN media_data ON users.user_id = media_data.user_id JOIN "
-                  "registration_data ON users.user_id = registration_data.user_id  JOIN locations ON users.user_id = "
-                  "locations.user_id JOIN cities ON locations.city_id=cities.city_id  WHERE "
-                  "registration_data.password_validation = %s")
+    :param param: bool параметр False - не валидные пользователи, True - валидные пользователи
+    :return: dict - если пользователи такие есть, False - если таких нет
+    """
+    query: str = (
+        "SELECT gender, name_title, name_first, name_last, age, nat, phone, cell, picture, email, username, "
+        "password, password_md5, password_validation, city, state, country, street_name, street_number, "
+        "postcode, latitude, longitude FROM users JOIN contact_details ON users.user_id = "
+        "contact_details.user_id JOIN media_data ON users.user_id = media_data.user_id JOIN "
+        "registration_data ON users.user_id = registration_data.user_id  JOIN locations ON users.user_id = "
+        "locations.user_id JOIN cities ON locations.city_id=cities.city_id  WHERE "
+        "registration_data.password_validation = %s"
+    )
     param: tuple = (param,)
     return connect_db(query, param)
 
 
 def get_check_email(email: str) -> [dict | bool]:
     """
-        Проверяет, если ли пользовать с таким email в бд, так же проверяет на валидность пароля
-        :param email: email пользователя
-        :return: dict - если пользователь найдет, False - если нет
-        """
+    Проверяет, если ли пользовать с таким email в бд, так же проверяет на валидность пароля
+    :param email: email пользователя
+    :return: dict - если пользователь найдет, False - если нет
+    """
     if validator_email(email):
         query: str = "SELECT * FROM REGISTRATION_DATA WHERE EMAIL = %s"
         email = (email,)
@@ -175,42 +209,48 @@ def get_check_email(email: str) -> [dict | bool]:
     return False
 
 
-def update_param_table_locations_db(email: str, name_param: str, value: [str | float | int]) -> [dict | bool]:
+def update_param_table_locations_db(
+    email: str, name_param: str, value: [str | float | int]
+) -> [dict | bool]:
     """
-        Метод для обновления данных в таблице locations
-        :param email: email пользователя
-        :param name_param: имя атрибута, который надо изменить
-        :param value: новое надо изменить
-        :return: dict - если данные изменены, False - если нет
-        """
-    query: str = (f"UPDATE locations SET {name_param} = %s WHERE user_id = (SELECT user_id FROM registration_data "
-                  f"WHERE email =%s)")
+    Метод для обновления данных в таблице locations
+    :param email: email пользователя
+    :param name_param: имя атрибута, который надо изменить
+    :param value: новое надо изменить
+    :return: dict - если данные изменены, False - если нет
+    """
+    query: str = (
+        f"UPDATE locations SET {name_param} = %s WHERE user_id = (SELECT user_id FROM registration_data "
+        f"WHERE email =%s)"
+    )
     param: tuple = (value, email)
     return connect_db(query, param)
 
 
 def update_param_table_cities_db(email, name_param, value) -> [dict | bool]:
     """
-        Метод для обновления данных в таблице cities
-        :param email: email пользователя
-        :param name_param: имя атрибута, который надо изменить
-        :param value: новое значение
-        :return: dict - если данные изменены, False - если нет
-        """
-    query: str = (f"UPDATE cities SET {name_param} = %s WHERE city_id = (SELECT city_id FROM locations WHERE user_id "
-                  f"= (SELECT user_id FROM registration_data WHERE email = %s) )")
+    Метод для обновления данных в таблице cities
+    :param email: email пользователя
+    :param name_param: имя атрибута, который надо изменить
+    :param value: новое значение
+    :return: dict - если данные изменены, False - если нет
+    """
+    query: str = (
+        f"UPDATE cities SET {name_param} = %s WHERE city_id = (SELECT city_id FROM locations WHERE user_id "
+        f"= (SELECT user_id FROM registration_data WHERE email = %s) )"
+    )
     param: tuple = (value, email)
     return connect_db(query, param)
 
 
 def update_param_table_registration_data_db(email, name_param, value) -> [dict | bool]:
     """
-        Метод для обновления данных в таблице registration_data
-        :param email: email пользователя
-        :param name_param: имя атрибута, который надо изменить
-        :param value: новое значение
-        :return: dict - если данные изменены, False - если нет
-        """
+    Метод для обновления данных в таблице registration_data
+    :param email: email пользователя
+    :param name_param: имя атрибута, который надо изменить
+    :param value: новое значение
+    :return: dict - если данные изменены, False - если нет
+    """
     query: str = f"UPDATE registration_data SET {name_param} = %s WHERE email = %s"
     param: tuple = (name_param, value, email)
     return connect_db(query, param)
@@ -218,41 +258,47 @@ def update_param_table_registration_data_db(email, name_param, value) -> [dict |
 
 def update_param_table_media_data_db(email, name_param, value) -> [dict | bool]:
     """
-        Метод для обновления данных в таблице media_data
-        :param email: email пользователя
-        :param name_param: имя атрибута, который надо изменить
-        :param value: новое значение
-        :return: dict - если данные изменены, False - если нет
-        """
-    query: str = (f"UPDATE media_data SET {name_param} = %s WHERE user_id =  (SELECT user_id FROM registration_data "
-                  f"WHERE email = %s)")
+    Метод для обновления данных в таблице media_data
+    :param email: email пользователя
+    :param name_param: имя атрибута, который надо изменить
+    :param value: новое значение
+    :return: dict - если данные изменены, False - если нет
+    """
+    query: str = (
+        f"UPDATE media_data SET {name_param} = %s WHERE user_id =  (SELECT user_id FROM registration_data "
+        f"WHERE email = %s)"
+    )
     param: tuple = (name_param, value, email)
     return connect_db(query, param)
 
 
 def update_param_table_contact_details_db(email, name_param, value) -> [dict | bool]:
     """
-        Метод для обновления данных в таблице contact_details
-        :param email: email пользователя
-        :param name_param: имя атрибута, который надо изменить
-        :param value: новое значение
-        :return: dict - если данные изменены, False - если нет
-        """
-    query: str = (f"UPDATE contact_details SET {name_param} = %s WHERE user_id = ( SELECT user_id FROM "
-                  f"registration_data WHERE email = %s)")
+    Метод для обновления данных в таблице contact_details
+    :param email: email пользователя
+    :param name_param: имя атрибута, который надо изменить
+    :param value: новое значение
+    :return: dict - если данные изменены, False - если нет
+    """
+    query: str = (
+        f"UPDATE contact_details SET {name_param} = %s WHERE user_id = ( SELECT user_id FROM "
+        f"registration_data WHERE email = %s)"
+    )
     param: tuple = (name_param, value, email)
     return connect_db(query, param)
 
 
 def update_param_table_users_db(email, name_param, value) -> [dict | bool]:
     """
-        Метод для обновления данных в таблице users
-        :param email: email пользователя
-        :param name_param: имя атрибута, который надо изменить
-        :param value: новое значение
-        :return: dict - если данные изменены, False - если нет
-        """
-    query: str = (f"UPDATE users SET {name_param} = %s WHERE user_id = ( SELECT user_id FROM registration_data WHERE "
-                  f"email = %s)")
+    Метод для обновления данных в таблице users
+    :param email: email пользователя
+    :param name_param: имя атрибута, который надо изменить
+    :param value: новое значение
+    :return: dict - если данные изменены, False - если нет
+    """
+    query: str = (
+        f"UPDATE users SET {name_param} = %s WHERE user_id = ( SELECT user_id FROM registration_data WHERE "
+        f"email = %s)"
+    )
     param: tuple = (name_param, value, email)
     return connect_db(query, param)
