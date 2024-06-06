@@ -10,5 +10,3 @@ def validator_pass(password: str):
         return False
 
 
-if __name__ == "__main__":
-    print(validator_pass("rwerwefsdffA"))
