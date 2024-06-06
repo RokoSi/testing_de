@@ -9,7 +9,7 @@ def get_users_url(
     with requests.get(url + str(count_users)) as response:
         if response.status_code == 200:
             data = response.json()
-            return data
+            return data["results"]
         else:
             return False
 
