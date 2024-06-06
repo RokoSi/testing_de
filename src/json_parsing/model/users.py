@@ -14,7 +14,6 @@ class Users(BaseModel):
     location: Location
     dob: Dob
     nat: str
-
     email: str
     login: RegistrationData
     registered: Registered

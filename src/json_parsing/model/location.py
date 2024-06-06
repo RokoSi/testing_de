@@ -1,3 +1,5 @@
+from typing import Union
+
 from pydantic import BaseModel
 
 from src.json_parsing.model.coordinates import Coordinates
@@ -9,5 +11,5 @@ class Location(BaseModel):
     city: str
     state: str
     country: str
-    postcode: int
+    postcode: Union[str, int]
     coordinates: Coordinates
