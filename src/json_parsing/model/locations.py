@@ -5,5 +5,5 @@ class Locations(BaseModel):
     street_name: str
     street_number: str
     postcode: str
-    latitude: str
-    longitude: str
+    latitude: float
+    longitude: float

@@ -2,4 +2,6 @@ from pydantic import BaseModel
 
 
 class MediaData(BaseModel):
-    picture: str
+    large: str
+    medium: str
+    thumbnail: str

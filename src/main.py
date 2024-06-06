@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-from cli import menu
-from src.option_switch.json_parsing.get_user import get_users_url
-from src.option_switch.json_parsing.pars import pars_user
 from settings import settings
+from src.cli import menu
 
 
 def main():

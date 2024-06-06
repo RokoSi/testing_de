@@ -1,0 +1,47 @@
+[tool.poetry]
+name = "testing-de2"
+version = "0.1.0"
+description = ""
+authors = ["chernyshev"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.11.6"
+requests = "^2.32.3"
+pytest = "^8.2.1"
+psycopg2 = "^2.9.9"
+
+pydantic-settings = "^2.2.1"
+uvicorn = "^0.30.1"
+httpx = "^0.25.0"
+psycopg2-binary = "^2.9.9"
+asyncpg = "^0.28.0"
+alembic = "^1.12.0"
+
+
+
+[tool.poetry.group.dev.dependencies]
+python-dotenv = "^1.0.0"
+
+coverage = "^7.3.2"
+bandit = "^1.7.5"
+black = "^23.10.0"
+mypy = "^1.6.1"
+pylint = "^3.0.1"
+ruff = "^0.1.1"
+pre-commit = "^3.5.0"
+
+
+[tool.mypy]
+python_version = 3.11
+
+ignore_missing_imports = true
+
+
+
+[tool.black]
+line-length = 88
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
