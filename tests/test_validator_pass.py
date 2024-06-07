@@ -1,6 +1,6 @@
 import pytest
 
-from src.db_use.validators.validator_password import validator_pass
+from src.validators.validator_password import validator_pass
 
 
 class TestValidatorPassword:

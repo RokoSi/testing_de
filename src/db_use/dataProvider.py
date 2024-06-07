@@ -1,7 +1,7 @@
 import psycopg2
 from src.db_use.ddl import ddl_use_string
-from src.db_use.validators.validator_email import validator_email
-from src.db_use.validators.validator_password import validator_pass
+from src.validators.validator_email import validator_email
+from src.validators.validator_password import validator_pass
 from src.settings import Settings
 
 

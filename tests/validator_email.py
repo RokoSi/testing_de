@@ -1,6 +1,6 @@
 import pytest
 
-from src.db_use.validators.validator_email import validator_email
+from src.validators.validator_email import validator_email
 
 
 class TestValidatorEmail:
