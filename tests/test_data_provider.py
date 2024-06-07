@@ -5,10 +5,12 @@ import random
 import pytest
 from settings import Settings
 from src.db_use.data_provider import (
-    get_users_db,
-    save_user,
     update_param_table_locations_db,
     update_param_table_cities_db,
+)
+from src.db_use.get_user import get_users_db
+from src.db_use.save_user import save_user
+from src.db_use.user_update import (
     update_param_table_registration_data_db,
     update_param_table_media_data_db,
     update_param_table_contact_details_db,
@@ -194,6 +196,7 @@ class TestDataProviderDB:
 
     @pytest.mark.parametrize("param", [True, False])
     def test_get_users_db(self, settings: Settings, param: bool):
+
         result = get_users_db(settings, param)
         result: bool = type(result) is dict
         assert result is False

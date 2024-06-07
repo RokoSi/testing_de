@@ -14,7 +14,7 @@ class TestGetUserURL:
         try:
             result = get_users_url(int(count_users), settings)
             assert bool(result) is False
-        except ValueError as ve:
+        except ValueError:
             assert False is False
 
     @pytest.mark.parametrize("count_users", [1, 10, 20, 30])
