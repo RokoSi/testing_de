@@ -1,1 +1,1 @@
-__all__ = ["menu.py"]
+__all__ = ["menu"]

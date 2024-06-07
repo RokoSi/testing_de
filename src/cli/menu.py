@@ -1,39 +1,58 @@
-from pprint import pprint
+import sys
 
-from src.db_use.dataProvider import save_user, create_db, get_users_db, get_check_email
+from src.db_use.data_provider import (
+    create_db,
+    save_user,
+    get_users_db,
+    get_check_email,
+    update_param_table_cities_db,
+    update_param_table_contact_details_db,
+    update_param_table_locations_db,
+    update_param_table_media_data_db,
+    update_param_table_registration_data_db,
+    update_param_table_users_db,
+    del_user,
+)
 from src.json_parsing.get_user import get_users_url
 from src.json_parsing.pars import pars_user
 from src.validators.validator_email import validator_email
 
 
-def main_menu(settings) -> tuple:
+def main_menu(settings):
     menu_elements: [list] = [
         "1. Добавить пользователей",
         "2. Получить валидных пользователей",
         "3. Получить невалидных пользователей",
         "4. Проверить наличие email",
         "5. Изменение данных",
-        "6. Выйти",
+        "6. Удалить пользователя",
+        "7. Выйти",
     ]
-    print("Меню:")
 
     create_db(settings)
 
     choices_part_func = {
-        1: count_user_add_menu
-        # 2:
-        # 3:
-        # 4:
-        # 5:
-        # 6:
+        1: count_user_add_menu,
+        2: valid_users,
+        3: invalid_users,
+        4: check_email,
+        5: update_param,
+        6: delite_user,
+        7: exit_program,
     }
-    for item in menu_elements:
-        print(item)
 
     while True:
+        print("Меню:")
+        for item in menu_elements:
+            print(item)
         try:
             choice: int = int(input("Выберите пункт меню: "))
-            return
+            if choice != 7:
+                action_menu = choices_part_func.get(choice)
+                action_menu(settings)
+            else:
+                action_menu = choices_part_func.get(choice)
+                action_menu()
         except ValueError:
             print("введите число")
 
@@ -42,13 +61,17 @@ def count_user_add_menu(settings) -> [bool]:
     while True:
         try:
             count_user = int(input("введите количество пользователей: "))
-            json = get_users_url(count_user)
+            json = get_users_url(count_user, settings)
             users = pars_user(json)
             if not users:
                 return False
             for user_param in range(len(users)):
+
                 if not save_user(settings, users[user_param]):
+                    print("Не получилось добавить пользователя")
                     return False
+                else:
+                    print("Пользователь успешно добавлен")
             return True
         except TypeError:
             return False
@@ -57,18 +80,118 @@ def count_user_add_menu(settings) -> [bool]:
 
 
 def valid_users(settings):
-    pprint(get_users_db(settings, True))
+    results = get_users_db(settings, True)
+    if results:
+        for row in results:
+            print(", ".join(map(str, row)))
+        return True
+    else:
+        print("нет таких записей\n")
+        return False
 
 
 def invalid_users(settings):
-    pprint(get_users_db(settings, False))
+    results = get_users_db(settings, False)
+    if results:
+        for row in results:
+            print(", ".join(map(str, row)))
+        return True
+    else:
+        print("нет таких записей")
+        return False
 
 
 def check_email(settings):
     while True:
         email = str(input("введите email: "))
         if validator_email(email):
-            get_check_email(settings, email)
-            break
+            if get_check_email(settings, email):
+                print("Пользователь есть в бд \n")
+                break
+            else:
+                print("нет пользователя в бд")
+                break
         else:
             print("введите валидный пароль")
+
+
+def update_param(settings):
+    update_attr = {
+        "city": ["cities"],
+        "state": ["cities"],
+        "country": ["cities"],
+        "phone": ["contact_details"],
+        "cell": ["contact_details"],
+        "street_name": ["locations"],
+        "street_number": ["locations"],
+        "postcode": ["locations"],
+        "latitude": ["locations"],
+        "longitude": ["locations"],
+        "picture": ["media_data"],
+        "email": ["registration_data"],
+        "username": ["registration_data"],
+        "password": ["registration_data"],
+        "password_md5": ["registration_data"],
+        "gender": ["users"],
+        "name_title": ["users"],
+        "name_first": ["users"],
+        "name_last": ["users"],
+        "age": ["users"],
+        "nat": ["users"],
+    }
+    print(
+        *[f"{i}. {key}" for i, key in enumerate(update_attr.keys(), start=1)], sep="\n"
+    )
+    num_param = input("выберите параметр на изменение:")
+    options = list(update_attr.keys())
+    try:
+        selected_key = options[int(num_param) - 1]
+        print("Вы выбрали параметр:", selected_key)
+
+        value = input("На что поменять: ")
+        email_user = input("Выберете пользователя по email: ")
+
+        select_table = update_attr.get(selected_key)
+
+        update_functions = {
+            "cities": update_param_table_cities_db,
+            "contact_details": update_param_table_contact_details_db,
+            "locations": update_param_table_locations_db,
+            "media_data": update_param_table_media_data_db,
+            "registration_data": update_param_table_registration_data_db,
+            "users": update_param_table_users_db,
+        }
+
+        if select_table[0] in update_functions:
+            if update_functions[select_table[0]](
+                settings, email_user, selected_key, value
+            ):
+                print("успешно")
+                return True
+            else:
+                print("не успешно")
+    except (ValueError, IndexError):
+        print("Некорректный ввод. Пожалуйста, введите число от 1 до", len(options))
+        return False
+
+
+def delite_user(settings):
+    while True:
+        email = str(input("введите email: "))
+        if validator_email(email):
+            ddd = del_user(settings, email)
+            if ddd:
+                print("Пользовать удален\n")
+                break
+            else:
+                print("Нет такого пользователя")
+                break
+        else:
+            print("введите валидный пароль")
+
+
+def exit_program():
+    """
+    Метод для завершения программы
+    """
+    sys.exit()
