@@ -54,21 +54,25 @@ def connect_db(
     :param param: Опционально, параметры для запроса
     :return: list - если есть что возвращаешь, int - если нечего вернуть
     """
-    with psycopg2.connect(
-        host=setting.host,
-        user=setting.user,
-        password=setting.password,
-        database=setting.db,
-    ) as connection:
-        connection.autocommit = True
-    with connection.cursor() as cursor:
-        cursor.execute(query, param)
+    try:
+        with psycopg2.connect(
+            host=setting.host,
+            user=setting.user,
+            password=setting.password,
+            database=setting.db,
+        ) as connection:
+            connection.autocommit = True
+        with connection.cursor() as cursor:
+            cursor.execute(query, param)
 
-        if cursor.description is not None:
+            if cursor.description is not None:
 
-            return cursor.fetchall()
-        else:
-            return cursor.rowcount
+                return cursor.fetchall()
+            else:
+                return cursor.rowcount
+    except Exception as e:
+        log.error(f"Ошибка при выполнении запроса: {e}")
+        return False
 
 
 def create_db(setting: Settings) -> bool:
@@ -84,7 +88,7 @@ def create_db(setting: Settings) -> bool:
 
     count_table: Union[List[Tuple[int]], bool] = connect_db(setting, query)
     if type(count_table) is list:
-        if count_table[0][0] != 0:
+        if isinstance(count_table, list) and count_table[0][0] == 0:
             try:
                 connect_db(setting, ddl_use_string())
                 return True

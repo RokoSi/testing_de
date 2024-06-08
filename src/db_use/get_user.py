@@ -1,4 +1,5 @@
 import logging
+from typing import Union, List, Dict
 
 from settings import Settings
 from src.db_use.data_provider import connect_db
@@ -7,7 +8,7 @@ from src.validators.validator_email import validator_email
 log = logging.getLogger(__name__)
 
 
-def get_users_db(setting: Settings, email: bool) -> [dict | bool]:
+def get_users_db(setting: Settings, email: str) -> Union[List[Dict], bool]:
     """
     Получение user с помощью email
     :param setting: Данные для подключения к бд
