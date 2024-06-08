@@ -1,11 +1,12 @@
 import logging
+from typing import Union, List
 
 from src.json_parsing.model.users import Users
 
 log = logging.getLogger(__name__)
 
 
-def pars_user(dict_param: dict) -> [Users | bool]:
+def pars_user(dict_param: dict) -> Union[List[Users], bool]:
     """
     Парсинг полученного dict.
     :param dict_param: json приведенный к dict
