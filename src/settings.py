@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -19,12 +20,12 @@ class Settings(BaseSettings):
         ],
         env_file_encoding="utf-8",
     )
-    host: str
-    user: str
-    password: str
-    db: str
-    port: int
-    url: str
+    host: Optional[str]
+    user: Optional[str]
+    password: Optional[str]
+    db: Optional[str]
+    port: Optional[int]
+    url: Optional[str]
 
 
 settings = Settings()  # type: ignore
