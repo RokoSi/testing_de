@@ -1,7 +1,7 @@
 import sys
 from typing import Callable, List, Union, Dict
 
-from settings import Settings
+from src.settings import Settings
 from src.db_use.data_provider import (
     create_db,
 )

@@ -22,7 +22,6 @@ def decorator_get_users_db(func: Callable) -> Callable:
         """
         try:
             return func(settings, query, param)
-
         except OperationalError as oe:
             log.error(f"Ошибка подключения к базе данных: {oe}")
             return False
@@ -46,7 +45,7 @@ def decorator_get_users_db(func: Callable) -> Callable:
 @decorator_get_users_db
 def connect_db(
     setting: Settings, query: str, param: Optional[Tuple[Any, ...]] = None
-) -> list[tuple[Any, ...]] | int:
+) -> list[tuple[Any, ...]] | int | bool:
     """
     Подключение к бд
     :param setting: Данные для подключения

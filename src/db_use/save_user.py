@@ -84,7 +84,7 @@ def save_user(setting: Settings, person: Users) -> bool:
             "postcode, latitude, longitude)VALUES (%s, %s, %s, %s, %s, %s, %s)"
         )
 
-        param_locations: Tuple[int, int, str, int, str, float, float] = (
+        param_locations: Tuple[int, int, str, int, Union[str, int], float, float] = (
             user_id,
             city_id,
             str(person.location.street.name),

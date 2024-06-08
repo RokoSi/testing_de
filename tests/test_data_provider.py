@@ -4,10 +4,7 @@ import string
 import random
 import pytest
 from settings import Settings
-from src.db_use.data_provider import (
-    update_param_table_locations_db,
-    update_param_table_cities_db,
-)
+
 from src.db_use.get_user import get_users_db
 from src.db_use.save_user import save_user
 from src.db_use.user_update import (
@@ -15,6 +12,8 @@ from src.db_use.user_update import (
     update_param_table_media_data_db,
     update_param_table_contact_details_db,
     update_param_table_users_db,
+    update_param_table_locations_db,
+    update_param_table_cities_db,
 )
 from src.json_parsing.model.coordinates import Coordinates
 from src.json_parsing.model.dob import Dob

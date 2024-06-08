@@ -38,7 +38,7 @@ def get_check_email(setting: Settings, email: str) -> bool:
     if validator_email(email):
         query: str = "SELECT * FROM REGISTRATION_DATA WHERE EMAIL = %s"
         email: tuple = (email,)
-        result: [list] = connect_db(setting, query, email)
+        result: List = connect_db(setting, query, email)
         if len(result):
             return True
         else:
@@ -46,3 +46,12 @@ def get_check_email(setting: Settings, email: str) -> bool:
     else:
         log.error(f"email {email} не валиден")
     return False
+
+
+def get_valid_user(setting: Settings, param_bool: bool):
+    query: str = """SELECT * FROM users INNER JOIN registration_data ON users.user_id = registration_data.user_id 
+    WHERE registration_data.password_validation = %s"""
+
+    param: tuple = (param_bool,)
+
+    return connect_db(setting, query, param)
