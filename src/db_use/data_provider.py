@@ -1,5 +1,5 @@
 import logging
-from typing import Callable, Union, Tuple, Any, List
+from typing import Callable, Union, Tuple, Any, List, Optional
 
 import psycopg2
 from psycopg2 import OperationalError, ProgrammingError, DatabaseError
@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 
 def decorator_get_users_db(func: Callable) -> Callable:
     def wrapper(
-        settings: Settings, query: str, param: Tuple[Any, ...] = None
+        settings: Settings, query: str, param: Optional[Tuple[Any, ...]] = None
     ) -> Union[List[dict], int, bool]:
         """
         Обработка ошибок.
@@ -45,7 +45,7 @@ def decorator_get_users_db(func: Callable) -> Callable:
 
 @decorator_get_users_db
 def connect_db(
-    setting: Settings, query: str, param: Tuple[Any, ...] = None
+    setting: Settings, query: str, param: Optional[Tuple[Any, ...]] = None
 ) -> list[tuple[Any, ...]] | int:
     """
     Подключение к бд
@@ -82,7 +82,7 @@ def create_db(setting: Settings) -> bool:
         "'information_schema')"
     )
 
-    count_table: [list | bool] = connect_db(setting, query)
+    count_table: Union[List[Tuple[int]], bool] = connect_db(setting, query)
     if type(count_table) is list:
         if count_table[0][0] != 0:
             try:

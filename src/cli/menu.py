@@ -1,5 +1,5 @@
 import sys
-from typing import Callable
+from typing import Callable, List, Union, Dict
 
 from settings import Settings
 from src.db_use.data_provider import (
@@ -26,7 +26,7 @@ def main_menu(settings: Settings):
     Cli для взаимодействия с функционалом.
     :param settings: Данные для подключения к бд.
     """
-    menu_elements: [list] = [
+    menu_elements: List[str] = [
         "1. Добавить пользователей",
         "2. Получить валидных пользователей",
         "3. Получить невалидных пользователей",
@@ -73,8 +73,8 @@ def count_user_add_menu(settings: Settings) -> bool:
     while True:
         try:
             count_user: int = int(input("введите количество пользователей: "))
-            json: dict = get_users_url(count_user, settings)
-            users: list = pars_user(json)
+            json: Union[Dict, bool] = get_users_url(count_user, settings)
+            users: List = pars_user(json)
             if not users:
                 return False
             for user_param in range(len(users)):
@@ -97,7 +97,7 @@ def valid_users(settings: Settings) -> bool:
     :param settings: Данные для подключения к бд
     :return: Ture - если удалось найти таких пользователй, False - если не удалось найти таких пользователей
     """
-    results: [dict | bool] = get_users_db(settings, True)
+    results: Union[List[Dict], bool] = get_users_db(settings, True)
     if results:
         for row in results:
             print(", ".join(map(str, row)))
@@ -113,7 +113,7 @@ def invalid_users(settings: Settings) -> bool:
     :param settings: Данные для подключения к бд
     :return: Ture - если удалось найти таких пользователй, False - если не удалось найти таких пользователей
     """
-    results: [dict | bool] = get_users_db(settings, False)
+    results: Union[List[Dict], bool] = get_users_db(settings, False)
     if results:
         for row in results:
             print(", ".join(map(str, row)))
@@ -147,7 +147,7 @@ def update_param(settings: Settings) -> bool:
     :param settings: Данные для подключения к бд
     :return: Ture - если данные успешно изменены, False - если ошибка изменения данных
     """
-    update_attr: dict = {
+    update_attr: Dict[str, List[str]] = {
         "city": ["cities"],
         "state": ["cities"],
         "country": ["cities"],
@@ -174,17 +174,17 @@ def update_param(settings: Settings) -> bool:
         *[f"{i}. {key}" for i, key in enumerate(update_attr.keys(), start=1)], sep="\n"
     )
     num_param: int = int(input("выберите параметр на изменение:"))
-    options: list = list(update_attr.keys())
+    options: List[str] = list(update_attr.keys())
     try:
         selected_key: str = options[int(num_param) - 1]
         print("Вы выбрали параметр:", selected_key)
 
-        value: [str | int] = input("На что поменять: ")
+        value: Union[str, int] = input("На что поменять: ")
         email_user: str = input("Выберете пользователя по email: ")
 
-        select_table: str = update_attr.get(selected_key)
+        select_table: List[str] = update_attr.get(selected_key)
 
-        update_functions: dict = {
+        update_functions: Dict[str, Callable] = {
             "cities": update_param_table_cities_db,
             "contact_details": update_param_table_contact_details_db,
             "locations": update_param_table_locations_db,
