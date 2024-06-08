@@ -3,7 +3,8 @@ import logging
 from typing import Union, List, Dict
 
 import requests
-from settings import Settings
+
+from src.settings import Settings
 
 log = logging.getLogger(__name__)
 
@@ -19,7 +20,7 @@ def get_users_url(count_users: int, settings: Settings) -> Union[List[Dict], boo
         with requests.get(settings.url + str(count_users)) as response:
             if response.status_code == 200:
                 data: Dict = response.json()
-
+                print(type(data))
                 return data["results"]
             else:
                 return False

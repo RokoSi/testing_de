@@ -1,8 +1,8 @@
 from typing import Tuple, Union, List
 
-from settings import Settings
 from src.db_use.data_provider import connect_db
 from src.json_parsing.model.users import Users
+from src.settings import Settings
 from src.validators.validator_password import validator_pass
 
 
@@ -22,10 +22,11 @@ def save_user(setting: Settings, person: Users) -> bool:
         person.location.country,
     )
 
-    city: Union[List[Tuple[int]], bool] = connect_db(
+    city: Union[List[Tuple[int]], int] = connect_db(
         setting, insert_query_cities, param_cities
     )
-    if city:
+    print(city)
+    if city and isinstance(city, list):
         city_id: int = city[0][0]
         insert_query_users: str = (
             "INSERT INTO users(gender, name_title, name_first, name_last, age, nat) VALUES ("
@@ -43,57 +44,62 @@ def save_user(setting: Settings, person: Users) -> bool:
         user: Union[List[Tuple[int]], bool] = connect_db(
             setting, insert_query_users, param_users
         )
-        user_id: int = user[0][0]
+        if isinstance(user, list):
+            user_id: int = user[0][0]
 
-        insert_query_contact_details: str = (
-            "INSERT INTO contact_details (user_id, phone, cell) VALUES (%s,%s,%s)"
-        )
-        param_contact_details: Tuple[int, str, str] = (
-            user_id,
-            person.phone,
-            person.cell,
-        )
+            insert_query_contact_details: str = (
+                "INSERT INTO contact_details (user_id, phone, cell) VALUES (%s,%s,%s)"
+            )
+            param_contact_details: Tuple[int, str, str] = (
+                user_id,
+                person.phone,
+                person.cell,
+            )
 
-        connect_db(setting, insert_query_contact_details, param_contact_details)
+            connect_db(setting, insert_query_contact_details, param_contact_details)
 
-        insert_query_media_data: str = (
-            "INSERT INTO media_data(user_id, picture) VALUES (%s, %s)"
-        )
-        param_media_data: Tuple[int, str] = (user_id, person.picture.thumbnail)
+            insert_query_media_data: str = (
+                "INSERT INTO media_data(user_id, picture) VALUES (%s, %s)"
+            )
+            param_media_data: Tuple[int, str] = (user_id, person.picture.thumbnail)
 
-        connect_db(setting, insert_query_media_data, param_media_data)
+            connect_db(setting, insert_query_media_data, param_media_data)
 
-        insert_query_registration_data: str = (
-            "INSERT INTO registration_data (user_id, email, username, password, "
-            "password_md5, password_validation)VALUES (%s, %s, %s, %s, %s, %s)"
-        )
+            insert_query_registration_data: str = (
+                "INSERT INTO registration_data (user_id, email, username, password, "
+                "password_md5, password_validation)VALUES (%s, %s, %s, %s, %s, %s)"
+            )
 
-        param_registration_data: Tuple[int, str, str, str, str, bool] = (
-            user_id,
-            person.email,
-            person.login.username,
-            person.login.password,
-            person.login.md5,
-            validator_pass(person.login.password),
-        )
+            param_registration_data: Tuple[int, str, str, str, str, bool] = (
+                user_id,
+                person.email,
+                person.login.username,
+                person.login.password,
+                person.login.md5,
+                validator_pass(person.login.password),
+            )
 
-        connect_db(setting, insert_query_registration_data, param_registration_data)
+            connect_db(setting, insert_query_registration_data, param_registration_data)
 
-        insert_query_locations: str = (
-            "INSERT INTO locations (user_id, city_id, street_name, street_number, "
-            "postcode, latitude, longitude)VALUES (%s, %s, %s, %s, %s, %s, %s)"
-        )
+            insert_query_locations: str = (
+                "INSERT INTO locations (user_id, city_id, street_name, street_number, "
+                "postcode, latitude, longitude)VALUES (%s, %s, %s, %s, %s, %s, %s)"
+            )
 
-        param_locations: Tuple[int, int, str, int, Union[str, int], float, float] = (
-            user_id,
-            city_id,
-            str(person.location.street.name),
-            person.location.street.number,
-            person.location.postcode,
-            person.location.coordinates.latitude,
-            person.location.coordinates.longitude,
-        )
+            param_locations: Tuple[
+                int, int, str, int, Union[str, int], float, float
+            ] = (
+                user_id,
+                city_id,
+                str(person.location.street.name),
+                person.location.street.number,
+                person.location.postcode,
+                person.location.coordinates.latitude,
+                person.location.coordinates.longitude,
+            )
 
-        connect_db(setting, insert_query_locations, param_locations)
-        return True
+            connect_db(setting, insert_query_locations, param_locations)
+            return True
+        else:
+            return False
     return False

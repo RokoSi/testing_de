@@ -6,7 +6,7 @@ from src.json_parsing.model.users import Users
 log = logging.getLogger(__name__)
 
 
-def pars_user(dict_param: dict) -> Union[List[Users], bool]:
+def pars_user(dict_param: list) -> Union[List[Users], bool]:
     """
     Парсинг полученного dict.
     :param dict_param: json приведенный к dict
@@ -16,7 +16,6 @@ def pars_user(dict_param: dict) -> Union[List[Users], bool]:
 
         users: List[Users] = [Users(**user) for user in dict_param]
         return users
-
     except (TypeError, KeyError, ValueError) as e:
         log.error(f"Ошибка {e}")
         return False

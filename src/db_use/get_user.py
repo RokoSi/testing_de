@@ -1,18 +1,21 @@
 import logging
-from typing import Union, List, Dict
-
-from settings import Settings
+from pprint import pprint
+from typing import Union, List, Dict, Tuple
 from src.db_use.data_provider import connect_db
+from src.settings import Settings, settings
 from src.validators.validator_email import validator_email
 
 log = logging.getLogger(__name__)
 
 
-def get_users_db(setting: Settings, email: str) -> Union[List[Dict], bool]:
+def get_users_db(
+    setting: Settings, password_validation: bool
+) -> Union[List[Dict], bool]:
     """
     Получение user с помощью email
+
     :param setting: Данные для подключения к бд
-    :param email: email для получения всех данный о пользователе
+    :param password_validation: True - для валидных пользователей , False - не валидные пользователи
     :return: dict - все данные о пользователе, False - если не удалось получить данные пользователе
     """
     query: str = (
@@ -24,7 +27,7 @@ def get_users_db(setting: Settings, email: str) -> Union[List[Dict], bool]:
         "locations.user_id JOIN cities ON locations.city_id=cities.city_id  WHERE "
         "registration_data.password_validation = %s"
     )
-    param: tuple = (email,)
+    param: tuple = (password_validation,)
     return connect_db(setting, query, param)
 
 
@@ -37,9 +40,9 @@ def get_check_email(setting: Settings, email: str) -> bool:
     """
     if validator_email(email):
         query: str = "SELECT * FROM REGISTRATION_DATA WHERE EMAIL = %s"
-        email: tuple = (email,)
-        result: List = connect_db(setting, query, email)
-        if len(result):
+        email_tuple: tuple[str] = (email,)
+        results: List = connect_db(setting, query, email_tuple)
+        if len(results):
             return True
         else:
             return False
@@ -55,3 +58,10 @@ def get_valid_user(setting: Settings, param_bool: bool):
     param: tuple = (param_bool,)
 
     return connect_db(setting, query, param)
+
+
+if __name__ == "__main__":
+    setas = settings
+
+    result = get_valid_user(setas, True)
+    pprint(result)

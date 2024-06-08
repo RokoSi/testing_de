@@ -38,6 +38,7 @@ def decorator_get_users_db(func: Callable) -> Callable:
         except Exception as e:
             log.error(f"Произошла ошибка: {e}")
             return False
+        return False
 
     return wrapper
 
@@ -95,4 +96,5 @@ def create_db(setting: Settings) -> bool:
                 log.error(f"Ошибка пути: {fe}")
                 return False
         return False
-    return False
+    else:
+        return False

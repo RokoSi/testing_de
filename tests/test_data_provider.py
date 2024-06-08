@@ -3,8 +3,6 @@ import secrets
 import string
 import random
 import pytest
-from settings import Settings
-
 from src.db_use.get_user import get_users_db
 from src.db_use.save_user import save_user
 from src.db_use.user_update import (
@@ -24,6 +22,7 @@ from src.json_parsing.model.registered import Registered
 from src.json_parsing.model.registration_data import RegistrationData
 from src.json_parsing.model.street import Street
 from src.json_parsing.model.users import Users
+from src.settings import Settings
 
 
 class TestDataProviderDB:

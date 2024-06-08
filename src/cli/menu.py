@@ -1,6 +1,7 @@
 import sys
-from typing import Callable, List, Union, Dict
+from typing import Callable, List, Union, Dict, Any, Optional
 
+from src.json_parsing.model.users import Users
 from src.settings import Settings
 from src.db_use.data_provider import (
     create_db,
@@ -38,7 +39,7 @@ def main_menu(settings: Settings):
 
     create_db(settings)
 
-    choices_part_func = {
+    choices_part_func: Dict[int, Callable] = {
         1: count_user_add_menu,
         2: valid_users,
         3: invalid_users,
@@ -54,12 +55,14 @@ def main_menu(settings: Settings):
             print(item)
         try:
             choice: int = int(input("Выберите пункт меню: "))
-            if choice != 7:
-                action_menu: Callable = choices_part_func.get(choice)
-                action_menu(settings)
+            if choice in choices_part_func:
+                action_menu = choices_part_func[choice]
+                if choice != 7:
+                    action_menu(settings)
+                else:
+                    action_menu()
             else:
-                action_menu: Callable = choices_part_func.get(choice)
-                action_menu()
+                print("Выбранная опция не поддерживается")
         except ValueError:
             print("введите число")
 
@@ -73,18 +76,22 @@ def count_user_add_menu(settings: Settings) -> bool:
     while True:
         try:
             count_user: int = int(input("введите количество пользователей: "))
-            json: Union[Dict, bool] = get_users_url(count_user, settings)
-            users: List = pars_user(json)
-            if not users:
+            json_result: Union[list[dict[Any, Any]], bool] = get_users_url(
+                count_user, settings
+            )
+            if isinstance(json_result, list):
+                users_result: Union[List[Users], bool] = pars_user(json_result)
+                if isinstance(users_result, list):
+                    for user in users_result:
+                        if not save_user(settings, user):
+                            print("Не получилось добавить пользователя")
+                            return False
+                        else:
+                            print("Пользователь успешно добавлен")
+                return True
+            else:
+                print("Не удалось получить данные")
                 return False
-            for user_param in range(len(users)):
-
-                if not save_user(settings, users[user_param]):
-                    print("Не получилось добавить пользователя")
-                    return False
-                else:
-                    print("Пользователь успешно добавлен")
-            return True
         except TypeError:
             return False
         except ValueError:
@@ -98,12 +105,16 @@ def valid_users(settings: Settings) -> bool:
     :return: Ture - если удалось найти таких пользователй, False - если не удалось найти таких пользователей
     """
     results: Union[List[Dict], bool] = get_users_db(settings, True)
-    if results:
-        for row in results:
-            print(", ".join(map(str, row)))
-        return True
+    if isinstance(results, list):
+        if results:
+            for row in results:
+                print(", ".join(map(str, row)))
+            return True
+        else:
+            print("нет таких записей\n")
+            return False
     else:
-        print("нет таких записей\n")
+        print("Ошибка при получении данных")
         return False
 
 
@@ -114,16 +125,20 @@ def invalid_users(settings: Settings) -> bool:
     :return: Ture - если удалось найти таких пользователй, False - если не удалось найти таких пользователей
     """
     results: Union[List[Dict], bool] = get_users_db(settings, False)
-    if results:
-        for row in results:
-            print(", ".join(map(str, row)))
-        return True
+    if isinstance(results, list):
+        if results:
+            for row in results:
+                print(", ".join(map(str, row)))
+            return True
+        else:
+            print("нет таких записей")
+            return False
     else:
-        print("нет таких записей")
+        print("Ошибка при получении данных")
         return False
 
 
-def check_email(settings: Settings):
+def check_email(settings: Settings) -> None:
     """
     Если ли пользователь в бд
     :param settings: Данные для подключения к бд
@@ -173,16 +188,25 @@ def update_param(settings: Settings) -> bool:
     print(
         *[f"{i}. {key}" for i, key in enumerate(update_attr.keys(), start=1)], sep="\n"
     )
-    num_param: int = int(input("выберите параметр на изменение:"))
-    options: List[str] = list(update_attr.keys())
     try:
+        num_param: int = int(input("выберите параметр на изменение:"))
+        options: List[str] = list(update_attr.keys())
+
+        if num_param < 1 or num_param > len(options):
+            raise IndexError(
+                "Выбранный номер параметра выходит за пределы допустимого диапазона"
+            )
+
         selected_key: str = options[int(num_param) - 1]
         print("Вы выбрали параметр:", selected_key)
 
         value: Union[str, int] = input("На что поменять: ")
         email_user: str = input("Выберете пользователя по email: ")
+        select_table: Optional[List[str]] = update_attr.get(selected_key)
 
-        select_table: List[str] = update_attr.get(selected_key)
+        if select_table is None:
+            print("Не удалось найти таблицу для обновления")
+            return False
 
         update_functions: Dict[str, Callable] = {
             "cities": update_param_table_cities_db,
@@ -201,12 +225,14 @@ def update_param(settings: Settings) -> bool:
                 return True
             else:
                 print("не успешно")
+                return False
+        return False
     except (ValueError, IndexError):
-        print("Некорректный ввод. Пожалуйста, введите число от 1 до", len(options))
+        print("Некорректный ввод. Пожалуйста, введите число от 1 до", len(update_attr))
         return False
 
 
-def delite_user(settings: Settings):
+def delite_user(settings: Settings) -> None:
     """
     Удаление пользователя по email, если он валиден
     :param settings: Данные для подключения к бд
@@ -225,7 +251,7 @@ def delite_user(settings: Settings):
             print("введите валидный пароль")
 
 
-def exit_program():
+def exit_program() -> None:
     """
     Метод для завершения программы
     """

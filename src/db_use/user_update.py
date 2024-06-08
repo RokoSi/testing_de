@@ -2,9 +2,8 @@ import logging
 from typing import Any, List, Union
 
 import psycopg2
-
-from settings import Settings
 from src.db_use.data_provider import connect_db
+from src.settings import Settings
 
 log = logging.getLogger(__name__)
 
