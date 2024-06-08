@@ -26,16 +26,6 @@ from src.settings import Settings
 
 
 class TestDataProviderDB:
-    @pytest.fixture
-    def settings(self):
-        return Settings(
-            host="127.0.0.1",
-            db="de_projects",
-            user="admin",
-            password="password",
-            port=5432,
-            url="https://randomuser.me/api/?password=special,upper,lower,number",
-        )
 
     def random_update_param_table_users_db(self):
         param_functions = {
@@ -192,14 +182,24 @@ class TestDataProviderDB:
         genders = ["Male", "Female"]
         return random.choice(genders)
 
-    @pytest.mark.parametrize("param", [True, False])
-    def test_get_users_db(self, settings: Settings, param: bool):
+    @staticmethod
+    def setting_te():
+        return Settings(
+            host="127.0.0.1",
+            db="de_projects",
+            user="admin",
+            password="password",
+            port=5432,
+            url="https://randomuser.me/api/?password=special,upper,lower,number",
+        )
 
-        result = get_users_db(settings, param)
+    @pytest.mark.parametrize("param", [True, False])
+    def test_get_users_db(self, param: bool):
+        result = get_users_db(self.setting_te(), param)
         result: bool = type(result) is dict
         assert result is False
 
-    def test_update_param_table_locations_db(self, settings: Settings):
+    def test_update_param_table_locations_db(self):
         email = self.random_email()
         user = [
             Users(
@@ -241,14 +241,16 @@ class TestDataProviderDB:
                 ),
             )
         ]
-        save_user(settings, user[0])
+        save_user(self.setting_te(), user[0])
         param = self.random_param_locations()
 
-        result = update_param_table_locations_db(settings, email, param[0], param[1])
+        result = update_param_table_locations_db(
+            self.setting_te(), email, param[0], param[1]
+        )
         result: bool = type(result) is list
         assert result is False
 
-    def test_update_param_table_cities_db(self, settings: Settings):
+    def test_update_param_table_cities_db(self):
         email = self.random_email()
         user = [
             Users(
@@ -290,14 +292,14 @@ class TestDataProviderDB:
                 ),
             )
         ]
-        save_user(settings, user[0])
+        save_user(self.setting_te(), user[0])
 
         param = self.random_param_cities()
-        result = update_param_table_cities_db(settings, email, param[0], [1])
+        result = update_param_table_cities_db(self.setting_te(), email, param[0], [1])
         result: bool = type(result) is list
         assert result is False
 
-    def test_update_param_table_registration_data_db(self, settings: Settings):
+    def test_update_param_table_registration_data_db(self):
         email = self.random_email()
         user = [
             Users(
@@ -339,14 +341,16 @@ class TestDataProviderDB:
                 ),
             )
         ]
-        save_user(settings, user[0])
+        save_user(self.setting_te(), user[0])
 
         param = self.random_registration_data()
-        result = update_param_table_registration_data_db(settings, email, param[0], [1])
+        result = update_param_table_registration_data_db(
+            self.setting_te(), email, param[0], [1]
+        )
         result: bool = type(result) is list
         assert result is False
 
-    def test_update_param_table_media_data_db(self, settings: Settings):
+    def test_update_param_table_media_data_db(self):
         email = self.random_email()
         user = [
             Users(
@@ -388,14 +392,16 @@ class TestDataProviderDB:
                 ),
             )
         ]
-        save_user(settings, user[0])
+        save_user(self.setting_te(), user[0])
 
         param = self.random_update_param_table_media_data_db()
-        result = update_param_table_media_data_db(settings, email, param[0], [1])
+        result = update_param_table_media_data_db(
+            self.setting_te(), email, param[0], [1]
+        )
         result: bool = type(result) is list
         assert result is False
 
-    def test_update_param_table_contact_details_db(self, settings: Settings):
+    def test_update_param_table_contact_details_db(self):
         email = self.random_email()
         user = [
             Users(
@@ -437,14 +443,16 @@ class TestDataProviderDB:
                 ),
             )
         ]
-        save_user(settings, user[0])
+        save_user(self.setting_te(), user[0])
 
         param = self.random_update_param_table_contact_details_db()
-        result = update_param_table_contact_details_db(settings, email, param[0], [1])
+        result = update_param_table_contact_details_db(
+            self.setting_te(), email, param[0], [1]
+        )
         result: bool = type(result) is list
         assert result is False
 
-    def test_update_param_table_users_db(self, settings: Settings):
+    def test_update_param_table_users_db(self):
         email = self.random_email()
         user = [
             Users(
@@ -486,8 +494,10 @@ class TestDataProviderDB:
                 ),
             )
         ]
-        save_user(settings, user[0])
+        save_user(self.setting_te(), user[0])
         param = self.random_update_param_table_users_db()
-        result = update_param_table_users_db(settings, email, param[0], param[1])
+        result = update_param_table_users_db(
+            self.setting_te(), email, param[0], param[1]
+        )
         result: bool = type(result) is list
         assert result is False

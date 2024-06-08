@@ -1,7 +1,7 @@
 import logging
-from typing import Union, List, Dict, Tuple
+from typing import Union, List, Dict
 from src.db_use.data_provider import connect_db
-from src.settings import Settings, settings
+from src.settings import Settings
 from src.validators.validator_email import validator_email
 
 log = logging.getLogger(__name__)
