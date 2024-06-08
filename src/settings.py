@@ -15,4 +15,4 @@ class Settings(BaseSettings):
     url: str
 
 
-settings = Settings()
+settings: Settings = Settings(_env_file="../.env.dev", _env_file_encoding="utf-8")

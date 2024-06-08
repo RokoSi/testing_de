@@ -14,7 +14,7 @@ def pars_user(dict_param: dict) -> Union[List[Users], bool]:
     """
     try:
 
-        users: list = [Users(**user) for user in dict_param]
+        users: List[Users] = [Users(**user) for user in dict_param]
         return users
 
     except (TypeError, KeyError, ValueError) as e:
