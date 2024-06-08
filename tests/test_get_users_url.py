@@ -1,7 +1,8 @@
 import pytest
 
-from settings import Settings
+
 from src.json_parsing.get_user import get_users_url
+from src.settings import Settings
 
 
 class TestGetUserURL:

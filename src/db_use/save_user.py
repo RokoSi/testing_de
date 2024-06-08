@@ -25,7 +25,6 @@ def save_user(setting: Settings, person: Users) -> bool:
     city: Union[List[Tuple[int]], int] = connect_db(
         setting, insert_query_cities, param_cities
     )
-    print(city)
     if city and isinstance(city, list):
         city_id: int = city[0][0]
         insert_query_users: str = (

@@ -1,5 +1,4 @@
 import logging
-from pprint import pprint
 from typing import Union, List, Dict, Tuple
 from src.db_use.data_provider import connect_db
 from src.settings import Settings, settings
@@ -58,10 +57,3 @@ def get_valid_user(setting: Settings, param_bool: bool):
     param: tuple = (param_bool,)
 
     return connect_db(setting, query, param)
-
-
-if __name__ == "__main__":
-    setas = settings
-
-    result = get_valid_user(setas, True)
-    pprint(result)
