@@ -87,8 +87,8 @@ def create_db(setting: Settings) -> bool:
     )
 
     count_table: Union[List[Tuple[int]], bool] = connect_db(setting, query)
-    if type(count_table) is list:
-        if isinstance(count_table, list) and count_table[0][0] == 0:
+    if isinstance(count_table, list):
+        if count_table[0][0] == 0:
             try:
                 connect_db(setting, ddl_use_string())
                 return True
