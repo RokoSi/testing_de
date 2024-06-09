@@ -22,6 +22,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install poetry
+          poetry add sqlfluff
 
       - name: Install project
         run: |
@@ -38,7 +39,7 @@ jobs:
           poetry run coverage run -m pytest .
           poetry run coverage html
           poetry run ruff check --fix .
-          poetry sqlfluff check ./docs/sql/* --dialect postgres
+          poetry sqlfluff check ./* --dialect postgres
 
       - name: Run tests
         run: |
