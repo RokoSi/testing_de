@@ -38,7 +38,8 @@ def update_param_table_media_data_db(
     :return: dict - если данные изменены, False - если нет
     """
     query: str = (
-        f"UPDATE media_data SET {name_param} = %s WHERE user_id =  (SELECT user_id FROM registration_data "
+        f"UPDATE media_data SET {name_param} = %s WHERE user_id = "
+        f" (SELECT user_id FROM registration_data "
         f"WHERE email = %s)"
     )
     param: tuple = (value, email)
@@ -58,7 +59,8 @@ def update_param_table_contact_details_db(
     :return: dict - если данные изменены, False - если нет
     """
     query: str = (
-        f"UPDATE contact_details SET {name_param} = %s WHERE user_id = ( SELECT user_id FROM "
+        f"UPDATE contact_details SET {name_param} = %s WHERE user_id"
+        f" = ( SELECT user_id FROM "
         f"registration_data WHERE email = %s)"
     )
     param: tuple = (value, email)
@@ -78,7 +80,8 @@ def update_param_table_users_db(
     :return: dict - если данные изменены, False - если нет
     """
     query: str = (
-        f"UPDATE users SET {name_param} = %s WHERE user_id = ( SELECT user_id FROM registration_data WHERE "
+        f"UPDATE users SET {name_param} = %s WHERE user_id ="
+        f" ( SELECT user_id FROM registration_data WHERE "
         f"email = %s)"
     )
     param: tuple = (value, email)
@@ -90,14 +93,14 @@ def del_user(setting: Settings, email: str) -> bool:
     Удаление пользователя по email
     :param setting: Данные для подключения
     :param email: email для удаления
-    :return: True - если удалось удалить пользователя, False - если пользователь не удалось найти и удалить
+    :return: True - если удалось удалить пользователя,
+     False - если пользователь не удалось найти и удалить
     """
     query_check_email: str = "SELECT email FROM registration_data   WHERE " "email = %s"
     param_email: tuple = (email,)
     check = connect_db(setting, query_check_email, param_email)
     if bool(len(check)):
-        query_del: str = (
-            f"""DELETE FROM registration_data
+        query_del: str = f"""DELETE FROM registration_data
     WHERE email = %s;
 
     DELETE FROM locations
@@ -131,7 +134,6 @@ def del_user(setting: Settings, email: str) -> bool:
         WHERE email = %s
         LIMIT 1
     );"""
-        )
         param: tuple = (email, email, email, email, email)
         try:
             connect_db(setting, query_del, param)
@@ -155,7 +157,8 @@ def update_param_table_locations_db(
     :return: dict - если данные изменены, False - если нет
     """
     query: str = (
-        f"UPDATE locations SET {name_param} = %s WHERE user_id = (SELECT user_id FROM registration_data "
+        f"UPDATE locations SET {name_param} = %s WHERE "
+        f"user_id = (SELECT user_id FROM registration_data "
         f"WHERE email =%s)"
     )
     param: tuple = (value, email)
@@ -175,7 +178,8 @@ def update_param_table_cities_db(
     :return: dict - если данные изменены, False - если нет
     """
     query: str = (
-        f"UPDATE cities SET {name_param} = %s WHERE city_id = (SELECT city_id FROM locations WHERE user_id "
+        f"UPDATE cities SET {name_param} = %s WHERE city_id ="
+        f" (SELECT city_id FROM locations WHERE user_id "
         f"= (SELECT user_id FROM registration_data WHERE email = %s) )"
     )
     param: tuple = (value, email)

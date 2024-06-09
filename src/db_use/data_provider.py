@@ -66,7 +66,6 @@ def connect_db(
             cursor.execute(query, param)
 
             if cursor.description is not None:
-
                 return cursor.fetchall()
             else:
                 return cursor.rowcount
@@ -79,10 +78,12 @@ def create_db(setting: Settings) -> bool:
     """
     Создание таблиц, если их нет
     :param setting: Данные для подключения
-    :return: True - если таблицы были созданы, False - если не создавались таблицы или есть ошибки
+    :return: True - если таблицы были созданы,
+     False - если не создавались таблицы или есть ошибки
     """
     query: str = (
-        "SELECT COUNT(*) FROM pg_catalog.pg_tables WHERE schemaname NOT IN ('pg_catalog',"
+        "SELECT COUNT(*) FROM pg_catalog.pg_tables"
+        " WHERE schemaname NOT IN ('pg_catalog',"
         "'information_schema')"
     )
 

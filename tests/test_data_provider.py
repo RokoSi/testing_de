@@ -26,7 +26,6 @@ from src.settings import Settings
 
 
 class TestDataProviderDB:
-
     def random_update_param_table_users_db(self):
         param_functions = {
             "gender": self.random_gender,
@@ -136,17 +135,25 @@ class TestDataProviderDB:
 
     def random_email(self):
         return (
-            f"{self.random_first_name()}.{self.random_last_name()}@{random.choice(['gmail', 'yahoo', 'hotmail'])}"
+            f"{self.random_first_name()}.{self.random_last_name()}@"
+            f"{random.choice(['gmail', 'yahoo', 'hotmail'])}"
             f".com"
         )
 
     @staticmethod
     def random_phone():
-        return f"{random.randint(100, 999)}-{random.randint(1000, 9999)}-{random.randint(1000, 9999)}"
+        return (
+            f"{random.randint(100, 999)}-"
+            f"{random.randint(1000, 9999)}-"
+            f"{random.randint(1000, 9999)}"
+        )
 
     @staticmethod
     def random_cell():
-        return f"{random.randint(100, 999)}-{random.randint(1000, 9999)}-{random.randint(1000, 9999)}"
+        return (
+            f"{random.randint(100, 999)}-{random.randint(1000, 9999)}"
+            f"-{random.randint(1000, 9999)}"
+        )
 
     @staticmethod
     def random_age():

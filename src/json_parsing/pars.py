@@ -13,7 +13,6 @@ def pars_user(dict_param: list) -> Union[List[Users], bool]:
     :return: Users - если удалось распарить | bool - если не удалось распарсить
     """
     try:
-
         users: List[Users] = [Users(**user) for user in dict_param]
         return users
     except (TypeError, KeyError, ValueError) as e:

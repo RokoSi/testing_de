@@ -11,10 +11,14 @@ def save_user(setting: Settings, person: Users) -> bool:
     Сохранение пользователя
     :param setting: Данные для подключения
     :param person: все параметры пользователя
-    :return: True - если удалось добавить пользователя, False - если пользователь не добавлен
+    :return: True - если удалось добавить пользователя,
+     False - если пользователь не добавлен
     """
     insert_query_cities: str = (
-        "INSERT INTO cities(city, state, country) VALUES (%s, %s, %s ) RETURNING city_id"
+        "INSERT INTO cities(city,"
+        " state, country)"
+        " VALUES (%s, %s, %s )"
+        " RETURNING city_id"
     )
     param_cities: Tuple[str, str, str] = (
         person.location.city,
@@ -28,7 +32,8 @@ def save_user(setting: Settings, person: Users) -> bool:
     if city and isinstance(city, list):
         city_id: int = city[0][0]
         insert_query_users: str = (
-            "INSERT INTO users(gender, name_title, name_first, name_last, age, nat) VALUES ("
+            "INSERT INTO users(gender, name_title,"
+            " name_first, name_last, age, nat) VALUES ("
             "%s, %s, %s, %s, %s, %s)RETURNING user_id"
         )
         param_users: Tuple[str, str, str, str, int, str] = (
@@ -47,7 +52,8 @@ def save_user(setting: Settings, person: Users) -> bool:
             user_id: int = user[0][0]
 
             insert_query_contact_details: str = (
-                "INSERT INTO contact_details (user_id, phone, cell) VALUES (%s,%s,%s)"
+                "INSERT INTO contact_details (user_id,"
+                " phone, cell) VALUES (%s,%s,%s)"
             )
             param_contact_details: Tuple[int, str, str] = (
                 user_id,
@@ -58,15 +64,17 @@ def save_user(setting: Settings, person: Users) -> bool:
             connect_db(setting, insert_query_contact_details, param_contact_details)
 
             insert_query_media_data: str = (
-                "INSERT INTO media_data(user_id, picture) VALUES (%s, %s)"
+                "INSERT INTO media_data(user_id, picture)" " VALUES (%s, %s)"
             )
             param_media_data: Tuple[int, str] = (user_id, person.picture.thumbnail)
 
             connect_db(setting, insert_query_media_data, param_media_data)
 
             insert_query_registration_data: str = (
-                "INSERT INTO registration_data (user_id, email, username, password, "
-                "password_md5, password_validation)VALUES (%s, %s, %s, %s, %s, %s)"
+                "INSERT INTO registration_data (user_id, "
+                "email, username, password, "
+                "password_md5, password_validation)"
+                "VALUES (%s, %s, %s, %s, %s, %s)"
             )
 
             param_registration_data: Tuple[int, str, str, str, str, bool] = (
@@ -81,8 +89,10 @@ def save_user(setting: Settings, person: Users) -> bool:
             connect_db(setting, insert_query_registration_data, param_registration_data)
 
             insert_query_locations: str = (
-                "INSERT INTO locations (user_id, city_id, street_name, street_number, "
-                "postcode, latitude, longitude)VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                "INSERT INTO locations (user_id, city_id,"
+                " street_name, street_number, "
+                "postcode, latitude, longitude)"
+                "VALUES (%s, %s, %s, %s, %s, %s, %s)"
             )
 
             param_locations: Tuple[

@@ -71,7 +71,8 @@ def count_user_add_menu(settings: Settings) -> bool:
     """
     Корректно передаеет вводимые данные для добавления пользователя
     :param settings: Данные для подключения к бд
-    :return: Ture - если пользователь успешно добавлен, False - если не удалось добавить пользователя
+    :return: Ture - если пользователь успешно добавлен,
+    False - если не удалось добавить пользователя
     """
     while True:
         try:
@@ -102,7 +103,8 @@ def valid_users(settings: Settings) -> bool:
     """
     Получение валидных пользователей и их вывод
     :param settings: Данные для подключения к бд
-    :return: Ture - если удалось найти таких пользователй, False - если не удалось найти таких пользователей
+    :return: Ture - если удалось найти таких пользователй,
+    False - если не удалось найти таких пользователей
     """
     results: Union[List[Dict], bool] = get_users_db(settings, True)
     if isinstance(results, list):
@@ -122,7 +124,8 @@ def invalid_users(settings: Settings) -> bool:
     """
     Получение не валидных пользователей и их вывод
     :param settings: Данные для подключения к бд
-    :return: Ture - если удалось найти таких пользователй, False - если не удалось найти таких пользователей
+    :return: Ture - если удалось найти таких пользователй,
+     False - если не удалось найти таких пользователей
     """
     results: Union[List[Dict], bool] = get_users_db(settings, False)
     if isinstance(results, list):
