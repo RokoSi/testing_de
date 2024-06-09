@@ -246,8 +246,7 @@ class TestDataProviderDB:
         result = update_param_table_locations_db(
             self.setting_te(), email, param[0], param[1]
         )
-        result: bool = type(result) is list
-        assert result is False
+        assert not isinstance(result, list)
 
     def test_update_param_table_cities_db(self):
         email = self.random_email()
@@ -295,8 +294,7 @@ class TestDataProviderDB:
 
         param = self.random_param_cities()
         result = update_param_table_cities_db(self.setting_te(), email, param[0], [1])
-        result: bool = type(result) is list
-        assert result is False
+        assert not isinstance(result, list)
 
     def test_update_param_table_registration_data_db(self):
         email = self.random_email()
@@ -346,8 +344,7 @@ class TestDataProviderDB:
         result = update_param_table_registration_data_db(
             self.setting_te(), email, param[0], [1]
         )
-        result: bool = type(result) is list
-        assert result is False
+        assert not isinstance(result, list)
 
     def test_update_param_table_media_data_db(self):
         email = self.random_email()
@@ -397,8 +394,7 @@ class TestDataProviderDB:
         result = update_param_table_media_data_db(
             self.setting_te(), email, param[0], [1]
         )
-        result: bool = type(result) is list
-        assert result is False
+        assert not isinstance(result, list)
 
     def test_update_param_table_contact_details_db(self):
         email = self.random_email()
@@ -448,8 +444,7 @@ class TestDataProviderDB:
         result = update_param_table_contact_details_db(
             self.setting_te(), email, param[0], [1]
         )
-        result: bool = type(result) is list
-        assert result is False
+        assert not isinstance(result, list)
 
     def test_update_param_table_users_db(self):
         email = self.random_email()
@@ -498,5 +493,4 @@ class TestDataProviderDB:
         result = update_param_table_users_db(
             self.setting_te(), email, param[0], param[1]
         )
-        result: bool = type(result) is list
-        assert result is False
+        assert not isinstance(result, list)
