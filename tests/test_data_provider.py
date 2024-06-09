@@ -196,8 +196,7 @@ class TestDataProviderDB:
     @pytest.mark.parametrize("param", [True, False])
     def test_get_users_db(self, param: bool):
         result = get_users_db(self.setting_te(), param)
-        result: bool = type(result) is dict
-        assert result is False
+        assert not isinstance(result, dict)
 
     def test_update_param_table_locations_db(self):
         email = self.random_email()
