@@ -26,9 +26,11 @@ jobs:
       - name: Install project
         run: |
           poetry install
+
       - name: Install sqlfluff
         run: |
           poetry run pip install sqlfluff
+
       - name: Run linters and formatters
         run: |
           poetry run black ./src
