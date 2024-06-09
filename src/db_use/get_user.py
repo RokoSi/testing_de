@@ -14,7 +14,8 @@ def get_users_db(
     Получение user с помощью email
 
     :param setting: Данные для подключения к бд
-    :param password_validation: True - для валидных пользователей,
+    :param password_validation: True - для валидных
+    пользователей,
      False - не валидные пользователи
     :return: dict - все данные о пользователе,
      False - если не удалось получить данные пользователе
@@ -51,10 +52,7 @@ def get_check_email(setting: Settings, email: str) -> bool:
         query: str = "SELECT * FROM REGISTRATION_DATA" " WHERE EMAIL = %s"
         email_tuple: tuple[str] = (email,)
         results: List = connect_db(setting, query, email_tuple)
-        if len(results):
-            return True
-        else:
-            return False
+        return bool(results)
     else:
         log.error(f"email {email} не валиден")
     return False
