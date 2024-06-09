@@ -14,7 +14,8 @@ def get_users_url(count_users: int, settings: Settings) -> Union[List[Dict], boo
     Получение json с сайта
     :param count_users: количество пользователей
     :param settings: настройки, который хранят url для подключения
-    :return: dict - если удалось получить json файл с сайта | bool - если не удалось получить json
+    :return: dict - если удалось получить json файл с сайта,
+     bool - если не удалось получить json
     """
     try:
         if settings.url is None:
