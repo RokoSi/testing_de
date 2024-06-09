@@ -50,6 +50,10 @@ ignore_errors = true
 select = ['E', 'W', 'F', 'I', 'B', 'C4', 'ARG', 'SIM']
 ignore = ['W291', 'W292', 'W293']
 
+
+[tool.sqlfluff]
+dialect = "postgres"
+max_line_length = 80
 [tool.black]
 line-length = 88
 
