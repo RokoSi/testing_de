@@ -1,12 +1,13 @@
 import sys
 from typing import Callable, List, Union, Dict, Any, Optional
 
+from src.db_use import get_users_db, get_check_email
 from src.json_parsing.model.users import Users
 from src.settings import Settings
 from src.db_use.data_provider import (
     create_db,
 )
-from src.db_use.get_user import get_users_db, get_check_email
+
 from src.db_use.save_user import save_user
 from src.db_use.user_update import (
     update_param_table_contact_details_db,
@@ -259,3 +260,7 @@ def exit_program() -> None:
     Метод для завершения программы
     """
     sys.exit()
+
+
+if __name__ == "__main__":
+    pass

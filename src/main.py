@@ -2,7 +2,7 @@
 import logging
 import os
 
-from src.cli import menu
+from src.cli import main_menu
 from src.settings import settings
 
 log = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ logging.basicConfig(
 
 
 def main():
-    menu.main_menu(settings)
+    main_menu(settings)
 
 
 if __name__ == "__main__":

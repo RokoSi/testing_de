@@ -38,9 +38,9 @@ def update_param_table_media_data_db(
     :return: dict - если данные изменены, False - если нет
     """
     query: str = (
-        f"UPDATE media_data SET {name_param} = %s WHERE user_id = "
-        f" (SELECT user_id FROM registration_data "
-        f"WHERE email = %s)"
+        f"""UPDATE media_data SET {name_param} = %s WHERE user_id = 
+        (SELECT user_id FROM registration_data 
+        WHERE email = %s)"""
     )
     param: tuple = (value, email)
     return connect_db(setting, query, param)
@@ -59,9 +59,9 @@ def update_param_table_contact_details_db(
     :return: dict - если данные изменены, False - если нет
     """
     query: str = (
-        f"UPDATE contact_details SET {name_param} = %s WHERE user_id"
-        f" = ( SELECT user_id FROM "
-        f"registration_data WHERE email = %s)"
+        f"""UPDATE contact_details SET {name_param} = %s WHERE user_id
+        = ( SELECT user_id FROM 
+        registration_data WHERE email = %s)"""
     )
     param: tuple = (value, email)
     return connect_db(setting, query, param)
@@ -80,9 +80,9 @@ def update_param_table_users_db(
     :return: dict - если данные изменены, False - если нет
     """
     query: str = (
-        f"UPDATE users SET {name_param} = %s WHERE user_id ="
-        f" ( SELECT user_id FROM registration_data WHERE "
-        f"email = %s)"
+        f"""UPDATE users SET {name_param} = %s WHERE user_id =
+        ( SELECT user_id FROM registration_data WHERE 
+        email = %s)"""
     )
     param: tuple = (value, email)
     return connect_db(setting, query, param)
@@ -96,7 +96,7 @@ def del_user(setting: Settings, email: str) -> bool:
     :return: True - если удалось удалить пользователя,
      False - если пользователь не удалось найти и удалить
     """
-    query_check_email: str = "SELECT email FROM registration_data   WHERE " "email = %s"
+    query_check_email: str = "SELECT email FROM registration_data   WHERE email = %s"
     param_email: tuple = (email,)
     check = connect_db(setting, query_check_email, param_email)
     if bool(len(check)):

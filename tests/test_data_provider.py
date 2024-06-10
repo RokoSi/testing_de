@@ -4,7 +4,6 @@ import string
 import random
 import pytest
 from src.db_use.get_user import get_users_db
-from src.db_use.save_user import save_user
 from src.db_use.user_update import (
     update_param_table_registration_data_db,
     update_param_table_media_data_db,
@@ -13,16 +12,6 @@ from src.db_use.user_update import (
     update_param_table_locations_db,
     update_param_table_cities_db,
 )
-from src.json_parsing.model.coordinates import Coordinates
-from src.json_parsing.model.dob import Dob
-from src.json_parsing.model.location import Location
-from src.json_parsing.model.media_data import MediaData
-from src.json_parsing.model.name import Name
-from src.json_parsing.model.registered import Registered
-from src.json_parsing.model.registration_data import RegistrationData
-from src.json_parsing.model.street import Street
-from src.json_parsing.model.users import Users
-from src.settings import Settings
 
 
 class TestDataProviderDB:
@@ -189,315 +178,66 @@ class TestDataProviderDB:
         genders = ["Male", "Female"]
         return random.choice(genders)
 
-    @staticmethod
-    def setting_te():
-        return Settings(
-            host="127.0.0.1",
-            db="de_projects",
-            user="admin",
-            password="password",
-            port=5432,
-            url="https://randomuser.me/api/?password=special,upper,lower,number",
-        )
-
     @pytest.mark.parametrize("param", [True, False])
-    def test_get_users_db(self, param: bool):
-        result = get_users_db(self.setting_te(), param)
+    def test_get_users_db(self, param: bool, setting_te):
+        result = get_users_db(setting_te, param)
         assert not isinstance(result, dict)
 
-    def test_update_param_table_locations_db(self):
-        email = self.random_email()
-        user = [
-            Users(
-                gender=self.random_gender(),
-                name=Name(
-                    title=self.random_name_title(),
-                    first=self.random_first_name(),
-                    last=self.random_last_name(),
-                ),
-                location=Location(
-                    street=Street(
-                        name=self.random_street_name(),
-                        number=self.random_street_number(),
-                    ),
-                    city=self.random_city(),
-                    state=self.random_state(),
-                    country=self.random_country(),
-                    postcode=self.random_postcode(),
-                    coordinates=Coordinates(
-                        latitude=self.random_latitude(),
-                        longitude=self.random_longitude(),
-                    ),
-                ),
-                dob=Dob(age=self.random_age()),
-                nat=self.random_nat(),
-                email=email,
-                login=RegistrationData(
-                    username=self.random_username(),
-                    password=self.random_password(),
-                    md5=self.random_password_md5(),
-                ),
-                registered=Registered(date="2014-01-20T17:20:35.041Z", age=10),
-                phone=self.random_phone(),
-                cell=self.random_cell(),
-                picture=MediaData(
-                    large="https://randomuser.me/api/portraits/men/18.jpg",
-                    medium="https://randomuser.me/api/portraits/med/men/18.jpg",
-                    thumbnail="https://randomuser.me/api/portraits/thumb/men/18.jpg",
-                ),
-            )
-        ]
-        save_user(self.setting_te(), user[0])
+    @pytest.mark.parametrize('execution_number', range(1))
+    def test_update_param_table_locations_db(self, execution_number,
+                                             user_data_test, setting_te):
+
+        email = user_data_test[0]
+        print(email)
         param = self.random_param_locations()
 
         result = update_param_table_locations_db(
-            self.setting_te(), email, param[0], param[1]
+            setting_te, email, param[0], param[1]
         )
         assert not isinstance(result, list)
 
-    def test_update_param_table_cities_db(self):
-        email = self.random_email()
-        user = [
-            Users(
-                gender=self.random_gender(),
-                name=Name(
-                    title=self.random_name_title(),
-                    first=self.random_first_name(),
-                    last=self.random_last_name(),
-                ),
-                location=Location(
-                    street=Street(
-                        name=self.random_street_name(),
-                        number=self.random_street_number(),
-                    ),
-                    city=self.random_city(),
-                    state=self.random_state(),
-                    country=self.random_country(),
-                    postcode=self.random_postcode(),
-                    coordinates=Coordinates(
-                        latitude=self.random_latitude(),
-                        longitude=self.random_longitude(),
-                    ),
-                ),
-                dob=Dob(age=self.random_age()),
-                nat=self.random_nat(),
-                email=email,
-                login=RegistrationData(
-                    username=self.random_username(),
-                    password=self.random_password(),
-                    md5=self.random_password_md5(),
-                ),
-                registered=Registered(date="2014-01-20T17:20:35.041Z", age=10),
-                phone=self.random_phone(),
-                cell=self.random_cell(),
-                picture=MediaData(
-                    large="https://randomuser.me/api/portraits/men/18.jpg",
-                    medium="https://randomuser.me/api/portraits/med/men/18.jpg",
-                    thumbnail="https://randomuser.me/api/portraits/thumb/men/18.jpg",
-                ),
-            )
-        ]
-        save_user(self.setting_te(), user[0])
+    @pytest.mark.parametrize('execution_number', range(20))
+    def test_update_param_table_cities_db(self, execution_number, user_data_test, setting_te):
+        email = user_data_test[0].email
 
         param = self.random_param_cities()
-        result = update_param_table_cities_db(self.setting_te(), email, param[0], [1])
+        result = update_param_table_cities_db(setting_te, email, param[0], [1])
         assert not isinstance(result, list)
 
-    def test_update_param_table_registration_data_db(self):
-        email = self.random_email()
-        user = [
-            Users(
-                gender=self.random_gender(),
-                name=Name(
-                    title=self.random_name_title(),
-                    first=self.random_first_name(),
-                    last=self.random_last_name(),
-                ),
-                location=Location(
-                    street=Street(
-                        name=self.random_street_name(),
-                        number=self.random_street_number(),
-                    ),
-                    city=self.random_city(),
-                    state=self.random_state(),
-                    country=self.random_country(),
-                    postcode=self.random_postcode(),
-                    coordinates=Coordinates(
-                        latitude=self.random_latitude(),
-                        longitude=self.random_longitude(),
-                    ),
-                ),
-                dob=Dob(age=self.random_age()),
-                nat=self.random_nat(),
-                email=email,
-                login=RegistrationData(
-                    username=self.random_username(),
-                    password=self.random_password(),
-                    md5=self.random_password_md5(),
-                ),
-                registered=Registered(date="2014-01-20T17:20:35.041Z", age=10),
-                phone=self.random_phone(),
-                cell=self.random_cell(),
-                picture=MediaData(
-                    large="https://randomuser.me/api/portraits/men/18.jpg",
-                    medium="https://randomuser.me/api/portraits/med/men/18.jpg",
-                    thumbnail="https://randomuser.me/api/portraits/thumb/men/18.jpg",
-                ),
-            )
-        ]
-        save_user(self.setting_te(), user[0])
-
+    @pytest.mark.parametrize('execution_number', range(20))
+    def test_update_param_table_registration_data_db(self, execution_number, user_data_test, setting_te):
+        email = user_data_test[0].email
         param = self.random_registration_data()
         result = update_param_table_registration_data_db(
-            self.setting_te(), email, param[0], [1]
+            setting_te, email, param[0], [1]
         )
         assert not isinstance(result, list)
 
-    def test_update_param_table_media_data_db(self):
-        email = self.random_email()
-        user = [
-            Users(
-                gender=self.random_gender(),
-                name=Name(
-                    title=self.random_name_title(),
-                    first=self.random_first_name(),
-                    last=self.random_last_name(),
-                ),
-                location=Location(
-                    street=Street(
-                        name=self.random_street_name(),
-                        number=self.random_street_number(),
-                    ),
-                    city=self.random_city(),
-                    state=self.random_state(),
-                    country=self.random_country(),
-                    postcode=self.random_postcode(),
-                    coordinates=Coordinates(
-                        latitude=self.random_latitude(),
-                        longitude=self.random_longitude(),
-                    ),
-                ),
-                dob=Dob(age=self.random_age()),
-                nat=self.random_nat(),
-                email=email,
-                login=RegistrationData(
-                    username=self.random_username(),
-                    password=self.random_password(),
-                    md5=self.random_password_md5(),
-                ),
-                registered=Registered(date="2014-01-20T17:20:35.041Z", age=10),
-                phone=self.random_phone(),
-                cell=self.random_cell(),
-                picture=MediaData(
-                    large="https://randomuser.me/api/portraits/men/18.jpg",
-                    medium="https://randomuser.me/api/portraits/med/men/18.jpg",
-                    thumbnail="https://randomuser.me/api/portraits/thumb/men/18.jpg",
-                ),
-            )
-        ]
-        save_user(self.setting_te(), user[0])
-
+    @pytest.mark.parametrize('execution_number', range(20))
+    def test_update_param_table_media_data_db(self, execution_number, user_data_test, setting_te):
+        email = user_data_test[0].email
         param = self.random_update_param_table_media_data_db()
         result = update_param_table_media_data_db(
-            self.setting_te(), email, param[0], [1]
+            setting_te, email, param[0], [1]
         )
         assert not isinstance(result, list)
 
-    def test_update_param_table_contact_details_db(self):
-        email = self.random_email()
-        user = [
-            Users(
-                gender=self.random_gender(),
-                name=Name(
-                    title=self.random_name_title(),
-                    first=self.random_first_name(),
-                    last=self.random_last_name(),
-                ),
-                location=Location(
-                    street=Street(
-                        name=self.random_street_name(),
-                        number=self.random_street_number(),
-                    ),
-                    city=self.random_city(),
-                    state=self.random_state(),
-                    country=self.random_country(),
-                    postcode=self.random_postcode(),
-                    coordinates=Coordinates(
-                        latitude=self.random_latitude(),
-                        longitude=self.random_longitude(),
-                    ),
-                ),
-                dob=Dob(age=self.random_age()),
-                nat=self.random_nat(),
-                email=email,
-                login=RegistrationData(
-                    username=self.random_username(),
-                    password=self.random_password(),
-                    md5=self.random_password_md5(),
-                ),
-                registered=Registered(date="2014-01-20T17:20:35.041Z", age=10),
-                phone=self.random_phone(),
-                cell=self.random_cell(),
-                picture=MediaData(
-                    large="https://randomuser.me/api/portraits/men/18.jpg",
-                    medium="https://randomuser.me/api/portraits/med/men/18.jpg",
-                    thumbnail="https://randomuser.me/api/portraits/thumb/men/18.jpg",
-                ),
-            )
-        ]
-        save_user(self.setting_te(), user[0])
+    @pytest.mark.parametrize('execution_number', range(20))
+    def test_update_param_table_contact_details_db(self, execution_number, user_data_test, setting_te):
+        email = user_data_test[0].email
 
         param = self.random_update_param_table_contact_details_db()
         result = update_param_table_contact_details_db(
-            self.setting_te(), email, param[0], [1]
+            setting_te, email, param[0], [1]
         )
         assert not isinstance(result, list)
 
-    def test_update_param_table_users_db(self):
-        email = self.random_email()
-        user = [
-            Users(
-                gender=self.random_gender(),
-                name=Name(
-                    title=self.random_name_title(),
-                    first=self.random_first_name(),
-                    last=self.random_last_name(),
-                ),
-                location=Location(
-                    street=Street(
-                        name=self.random_street_name(),
-                        number=self.random_street_number(),
-                    ),
-                    city=self.random_city(),
-                    state=self.random_state(),
-                    country=self.random_country(),
-                    postcode=self.random_postcode(),
-                    coordinates=Coordinates(
-                        latitude=self.random_latitude(),
-                        longitude=self.random_longitude(),
-                    ),
-                ),
-                dob=Dob(age=self.random_age()),
-                nat=self.random_nat(),
-                email=email,
-                login=RegistrationData(
-                    username=self.random_username(),
-                    password=self.random_password(),
-                    md5=self.random_password_md5(),
-                ),
-                registered=Registered(date="2014-01-20T17:20:35.041Z", age=10),
-                phone=self.random_phone(),
-                cell=self.random_cell(),
-                picture=MediaData(
-                    large="https://randomuser.me/api/portraits/men/18.jpg",
-                    medium="https://randomuser.me/api/portraits/med/men/18.jpg",
-                    thumbnail="https://randomuser.me/api/portraits/thumb/men/18.jpg",
-                ),
-            )
-        ]
-        save_user(self.setting_te(), user[0])
+    @pytest.mark.parametrize('execution_number', range(20))
+    def test_update_param_table_users_db(self, execution_number, user_data_test, setting_te):
+        email = user_data_test[0].email
+
         param = self.random_update_param_table_users_db()
         result = update_param_table_users_db(
-            self.setting_te(), email, param[0], param[1]
+            setting_te, email, param[0], param[1]
         )
         assert not isinstance(result, list)
