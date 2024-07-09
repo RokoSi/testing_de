@@ -1,7 +1,7 @@
 import logging
 from typing import Union, List
 
-from src.json_parsing.model.users import Users
+from .model.users import Users
 
 log = logging.getLogger(__name__)
 

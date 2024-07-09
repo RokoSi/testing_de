@@ -1,9 +1,9 @@
 from typing import Tuple, Union, List
 
-from src.db_use.data_provider import connect_db
+from .data_provider import connect_db
 from src.json_parsing.model.users import Users
 from src.settings import Settings
-from src.validators.validator_password import validator_pass
+from src.validators import validator_pass
 
 
 def save_user(setting: Settings, person: Users) -> bool:
